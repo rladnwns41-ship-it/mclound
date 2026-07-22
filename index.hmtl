@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AOAO Cloud</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#f8f9fb;--bg2:#ffffff;--surface:#f1f3f5;--surface2:#e9ecef;--hover:#f0f2f5;
+--border:#e5e7eb;--border2:#d1d5db;
+--text:#1a1d21;--text2:#5e6267;--text3:#9ca0a6;--dim:#c4c7cc;
+--green:#2563eb;--green2:#1d4ed8;--green-a:#2563eb12;
+--red:#ef4444;--blue:#2563eb;--yellow:#f59e0b;--purple:#7c3aed;--orange:#f97316;--cyan:#0891b2;
+--font:'DM Sans',system-ui,sans-serif;--mono:'DM Mono','SF Mono',monospace;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;overflow:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;font-size:inherit}
+a{color:var(--green);text-decoration:none}
+::-webkit-scrollbar{width:12px;height:12px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#ccc;border:3px solid transparent;background-clip:padding-box;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#aaa}
+
+/*=== LAYOUT (the critical part) ===*/
+#app{display:none;flex-direction:column;height:100vh;overflow:hidden;max-width:100vw}
+#app.show{display:flex}
+#topbar{height:48px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;flex-shrink:0;z-index:100;overflow:visible}
+#body-row{display:flex;flex:1;min-height:0;overflow:hidden}
+#sidebar{width:48px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 4px;gap:2px;flex-shrink:0;overflow-y:auto;overflow-x:hidden}
+#page-area{flex:1;display:flex;min-width:0;min-height:0;overflow:hidden}  /* both min-0 for nested flex scroll */
+.inner-sb{width:240px;background:var(--bg2);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
+.page-content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0;padding-right:2px}  /* THIS is what scrolls */
+.page-inner{max-width:1280px;margin:0 auto;padding:28px 36px 60px}
+
+/* Scrollbar with proper spacing so it doesn't touch edges */
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:transparent;margin:4px 0}
+::-webkit-scrollbar-thumb{background:#ccc;border:2px solid transparent;background-clip:padding-box;border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:#aaa;background-clip:padding-box}
+
+/*=== TOPBAR ===*/
+.tb-logo{font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px;color:var(--green)}
+.tb-sep{width:1px;height:18px;background:var(--border2);margin:0 12px}
+.tb-item{padding:6px 12px;font-size:13px;color:var(--text2);border-radius:6px;display:flex;align-items:center;gap:7px;cursor:pointer;position:relative;overflow:visible}
+.tb-item:hover{background:var(--surface);color:var(--text)}
+.tb-badge{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:600}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.tb-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--blue));display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+
+/* Project dropdown */
+.proj-dd{position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--border2);border-radius:8px;padding:6px;min-width:220px;box-shadow:0 12px 40px rgba(0,0,0,.7);display:none;z-index:9999}
+.proj-dd.open{display:block}
+.proj-dd-title{padding:6px 10px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.proj-dd-item{padding:7px 10px;border-radius:5px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2)}
+.proj-dd-item:hover{background:var(--hover);color:var(--text)}
+.proj-dd-item.active{background:var(--green-a);color:var(--green)}
+
+/*=== SIDEBAR ===*/
+.sb-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--text3);border-radius:6px;cursor:pointer;position:relative}
+.sb-btn:hover{background:var(--surface);color:var(--text)}
+.sb-btn.active{background:var(--surface);color:var(--green)}
+.sb-btn svg{width:18px;height:18px}
+.sb-tip{position:absolute;left:42px;top:50%;transform:translateY(-50%);background:#1a1d21;color:#fff;padding:5px 10px;border-radius:5px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:.12s;z-index:9999}
+.sb-btn:hover .sb-tip{opacity:1}
+.sb-spacer{flex:1}
+
+/*=== INNER SIDEBAR ===*/
+.is-title{padding:0 20px 12px;font-size:15px;font-weight:700}
+.is-section{padding:12px 20px 5px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.is-item{padding:7px 20px;font-size:13px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:10px;border-left:2px solid transparent}
+.is-item:hover{color:var(--text);background:var(--hover)}
+.is-item.active{color:var(--green);background:var(--green-a);border-left-color:var(--green)}
+.is-item svg{width:15px;height:15px}
+
+/*=== PAGE HEADER ===*/
+.ph{margin-bottom:24px}
+.ph h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.ph p{font-size:13px;color:var(--text2);margin-top:4px}
+
+/*=== CARDS ===*/
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:16px}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.card-h h3{font-size:14px;font-weight:600;flex:1}
+.card-b{padding:20px}
+
+/*=== STAT GRID ===*/
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.stat-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:700;letter-spacing:-.5px}
+.stat-sub{font-size:11px;color:var(--text3);margin-top:3px}
+
+/*=== SERVICE GRID ===*/
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.svc-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:.12s}
+.svc-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.svc-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;border:1px solid}
+.svc-icon svg{width:18px;height:18px}
+.svc-name{font-size:14px;font-weight:600;margin-bottom:3px}
+.svc-desc{font-size:12px;color:var(--text3)}
+
+/*=== BUTTONS ===*/
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:500;transition:.1s;border:1px solid transparent;white-space:nowrap}
+.btn svg{width:14px;height:14px}
+.btn:active{transform:scale(.97)}
+.btn-p{background:var(--green);color:#fff}
+.btn-p:hover{background:var(--green2)}
+.btn-s{background:var(--surface);border-color:var(--border2);color:var(--text)}
+.btn-s:hover{background:var(--hover)}
+.btn-d{color:#dc2626;border-color:#fca5a5}
+.btn-d:hover{background:#fee2e2;color:#dc2626}
+.btn-g{color:var(--text2)}
+.btn-g:hover{background:var(--surface);color:var(--text)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-sm svg{width:13px;height:13px}
+
+/*=== FORM ===*/
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.field .hint{font-size:11px;color:var(--text3);margin-top:4px}
+.inp{width:100%;padding:8px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-size:13px;outline:none;transition:.12s;font-family:inherit}
+.inp:focus{border-color:var(--green)}
+.inp::placeholder{color:var(--dim)}
+.ta{font-family:var(--mono);min-height:90px;resize:vertical;line-height:1.6}
+.field-row{display:flex;gap:10px;align-items:flex-end}
+.field-row .field{flex:1;margin-bottom:0}
+
+/*=== DROPDOWN ===*/
+.dd{position:relative}
+.dd-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;background:var(--surface);border:1px solid var(--border2);border-radius:6px;font-size:13px;color:var(--text);cursor:pointer;transition:.12s;user-select:none}
+.dd-trigger:hover{border-color:var(--text3);background:var(--hover)}
+.dd-trigger.open{border-color:var(--green);background:var(--bg2)}
+.dd-trigger .dd-arrow{width:14px;height:14px;flex-shrink:0;color:var(--text3);transition:transform .15s}
+.dd-trigger.open .dd-arrow{transform:rotate(180deg);color:var(--green)}
+.dd-trigger .dd-val{flex:1;text-align:left}
+.dd-menu{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:9990;max-height:220px;overflow-y:auto;display:none;padding:4px}
+.dd-menu.open{display:block;animation:ddIn .12s ease}
+@keyframes ddIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.dd-opt{padding:8px 12px;border-radius:5px;cursor:pointer;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:8px;transition:.08s}
+.dd-opt:hover{background:var(--hover);color:var(--text)}
+.dd-opt.sel{color:var(--green);background:var(--green-a);font-weight:500}
+.dd-opt.sel::after{content:'✓';margin-left:auto;font-size:11px}
+
+/*=== TABLE ===*/
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:9px 14px;font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);font-weight:600}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.tbl tr:hover td{background:var(--hover)}
+.mono{font-family:var(--mono);font-size:12px;color:var(--text2)}
+
+/*=== TAGS ===*/
+.tag{display:inline-block;padding:2px 8px;font-size:11px;font-weight:600;border-radius:3px}
+.tag-g{background:#dcfce7;color:#16a34a}.tag-r{background:#fee2e2;color:#dc2626}.tag-b{background:#dbeafe;color:#2563eb}
+
+/*=== TERMINAL ===*/
+.term{background:#0a0a0a;border:1px solid var(--border);border-radius:10px;overflow:hidden;font-family:var(--mono)}
+.term-bar{padding:7px 12px;background:#151515;border-bottom:1px solid var(--border);display:flex;gap:5px;align-items:center}
+.term-dot{width:10px;height:10px;border-radius:50%}
+.term-body{padding:14px;min-height:240px;max-height:400px;overflow-y:auto;font-size:13px;color:#86efac;line-height:1.7;white-space:pre-wrap}
+.term-in{padding:8px 12px;border-top:1px solid var(--border);background:#111;display:flex;align-items:center;gap:7px}
+.term-in span{color:var(--green);font-size:13px;font-weight:600}
+.term-in input{flex:1;background:none;border:none;color:#eee;font-family:var(--mono);font-size:13px;outline:none}
+
+/*=== CODE ===*/
+.code{background:#1a1d21;border:1px solid #2a2d33;border-radius:8px;padding:14px;font-family:var(--mono);font-size:12px;line-height:1.7;color:#a5d6ff;white-space:pre-wrap;word-break:break-all;max-height:350px;overflow:auto}
+
+/*=== SQL ===*/
+.sql-box{background:#0a0a0a;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.sql-bar{padding:6px 12px;background:#151515;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px}
+.sql-ta{width:100%;min-height:240px;padding:14px;background:#0a0a0a;border:none;color:#86efac;font-family:var(--mono);font-size:12px;line-height:1.7;outline:none;resize:vertical}
+
+/*=== FILE DROP ===*/
+.fdrop{border:1.5px dashed var(--border2);border-radius:10px;padding:32px;text-align:center;cursor:pointer;transition:.12s;background:var(--surface);display:flex;flex-direction:column;align-items:center;gap:6px}
+.fdrop:hover{border-color:var(--green);background:var(--green-a)}
+.fdrop svg{width:28px;height:28px;color:var(--text3)}
+.fdrop:hover svg{color:var(--green)}
+.fdrop input{display:none}
+
+/*=== TABS ===*/
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:14px}
+.tab{padding:8px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;font-weight:500}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--green);border-bottom-color:var(--green)}
+
+/*=== API KEY ===*/
+.apikey{font-family:var(--mono);font-size:12px;background:#1a1d21;border:1px solid var(--border2);border-radius:5px;padding:8px 12px;color:#60a5fa;display:flex;align-items:center;gap:8px;overflow:hidden}
+.apikey span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/*=== TOAST ===*/
+.toast-area{position:fixed;top:54px;right:14px;z-index:99999;display:flex;flex-direction:column;gap:6px}
+.toast{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;font-size:12px;display:flex;align-items:center;gap:8px;min-width:220px;box-shadow:0 6px 20px rgba(0,0,0,.5);animation:tIn .2s}
+.toast.ok{border-left:3px solid var(--green)}
+.toast.err{border-left:3px solid var(--red)}
+@keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/*=== EMPTY ===*/
+.empty{padding:40px;text-align:center;color:var(--text3);font-size:13px}
+
+/*=== BANNER ===*/
+.banner{background:var(--green-a);border:1px solid rgba(62,207,142,.25);border-radius:8px;padding:12px 16px;font-size:13px;display:flex;gap:8px;margin-bottom:14px;line-height:1.5}
+
+/*=== EP DOC ===*/
+.ep{background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px}
+.ep-h{padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;font-size:12px}
+.ep-h:hover{background:var(--hover)}
+.ep-m{padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:var(--mono)}
+.ep-m.get{background:#dcfce7;color:#16a34a}.ep-m.post{background:#dbeafe;color:#2563eb}.ep-m.put{background:#fef3c7;color:#d97706}.ep-m.del{background:#fee2e2;color:#dc2626}
+.ep-p{font-family:var(--mono);font-size:12px;flex:1}
+.ep-d{color:var(--text3);font-size:12px}
+.ep-body{display:none;padding:10px 12px;border-top:1px solid var(--border);background:var(--surface)}
+.ep-body.open{display:block}
+
+/*=== LOGIN ===*/
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 50%,#f8f9fb 100%);display:flex;align-items:center;justify-content:center;z-index:99998;overflow:hidden;display:none}
+.login-screen.show{display:flex}
+
+/* ========== LANDING (마케팅 홈) ========== */
+.lnd-screen{position:fixed;inset:0;background:#fafbfc;z-index:99996;overflow-y:auto;display:none;color:#0f1116;font-family:inherit}
+.lnd-screen.show{display:block}
+.lnd-nav{display:flex;align-items:center;padding:18px 40px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:5;border-bottom:1px solid #e5e7eb}
+.lnd-nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:#0f1116}
+.lnd-nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.lnd-nav-link{color:#4b5563;text-decoration:none;font-size:14px;padding:8px 12px;border-radius:6px;transition:.1s}
+.lnd-nav-link:hover{color:#0f1116;background:#f3f4f6}
+.lnd-btn{border:none;background:transparent;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
+.lnd-btn-p{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}
+.lnd-btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(99,102,241,.35)}
+.lnd-btn-ghost{color:#0f1116;background:transparent}
+.lnd-btn-ghost:hover{background:#f3f4f6}
+.lnd-btn-lg{padding:13px 26px;font-size:15px;border-radius:10px}
+.lnd-hero{max-width:1100px;margin:0 auto;padding:80px 40px 60px;text-align:center}
+.lnd-hero-badge{display:inline-block;padding:6px 14px;background:#eef2ff;color:#4f46e5;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:24px}
+.lnd-hero-title{font-size:56px;line-height:1.1;font-weight:800;margin:0 0 20px;letter-spacing:-1.5px;color:#0f1116}
+.lnd-hero-grad{background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 50%,#ec4899 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.lnd-hero-sub{font-size:19px;color:#4b5563;margin:0 0 36px;line-height:1.5;max-width:640px;margin-left:auto;margin-right:auto}
+.lnd-hero-cta{display:flex;gap:12px;justify-content:center;margin-bottom:64px;flex-wrap:wrap}
+.lnd-hero-code{max-width:780px;margin:0 auto;background:#0d1117;border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.3);overflow:hidden;text-align:left}
+.lnd-code-bar{background:#161b22;padding:10px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #21262d}
+.lnd-code-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+.lnd-code-title{margin-left:12px;font-size:11px;color:#8b949e;font-family:var(--mono)}
+.lnd-code-body{margin:0;padding:22px 24px;font-family:var(--mono);font-size:13px;line-height:1.7;color:#e6edf3;overflow-x:auto;white-space:pre}
+.lnd-code-c{color:#7ee787}
+.lnd-features{max-width:1100px;margin:0 auto;padding:80px 40px}
+.lnd-sec-title{text-align:center;font-size:36px;font-weight:800;margin:0 0 48px;color:#0f1116;letter-spacing:-1px}
+.lnd-feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.lnd-feat{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:26px;transition:.15s}
+.lnd-feat:hover{transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(0,0,0,.1);border-color:#d1d5db}
+.lnd-feat-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.lnd-feat h3{margin:0 0 6px;font-size:16px;font-weight:700;color:#0f1116}
+.lnd-feat p{margin:0;color:#4b5563;font-size:13px;line-height:1.5}
+.lnd-security{max-width:900px;margin:0 auto;padding:80px 40px;background:#fff;border-radius:20px;margin-bottom:60px}
+.lnd-sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.lnd-sec-item{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#f9fafb;border-radius:10px;font-size:14px;color:#111827}
+.lnd-check{color:#22c55e;font-weight:700;font-size:16px;flex-shrink:0}
+.lnd-foot{max-width:1100px;margin:0 auto;padding:40px;display:flex;align-items:center;color:#6b7280;font-size:13px;border-top:1px solid #e5e7eb}
+.lnd-foot-links{margin-left:auto}
+@media(max-width:768px){
+  .lnd-nav{padding:14px 20px}.lnd-nav-link{display:none}
+  .lnd-hero{padding:50px 20px 40px}.lnd-hero-title{font-size:36px}.lnd-hero-sub{font-size:15px}
+  .lnd-features,.lnd-security{padding:50px 20px}.lnd-sec-title{font-size:26px}
+  .lnd-sec-grid{grid-template-columns:1fr}
+  .lnd-foot{flex-direction:column;gap:14px;padding:30px 20px}
+  .lnd-code-body{font-size:11px}
+}
+
+/* ========== PROJECTS 화면 ========== */
+.prj-screen{position:fixed;inset:0;background:var(--bg);z-index:99995;overflow-y:auto;display:none}
+.prj-screen.show{display:block}
+.prj-topbar{display:flex;align-items:center;padding:14px 32px;background:var(--bg2);border-bottom:1px solid var(--border);gap:16px}
+.prj-user{padding:5px 12px;background:var(--surface);border-radius:100px;font-size:12px;color:var(--text2);font-weight:600}
+.prj-body{max-width:1200px;margin:0 auto;padding:48px 32px}
+.prj-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;gap:20px;flex-wrap:wrap}
+.prj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.prj-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.prj-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(0,0,0,.12)}
+.prj-card-icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin-bottom:14px}
+.prj-card h3{margin:0 0 6px;font-size:16px;color:var(--text)}
+.prj-card-desc{color:var(--text3);font-size:12px;margin-bottom:14px;line-height:1.5;min-height:32px}
+.prj-card-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);padding-top:12px;border-top:1px solid var(--border)}
+.prj-card-del{position:absolute;top:12px;right:12px;opacity:0;transition:.15s;background:transparent;border:none;color:var(--text3);cursor:pointer;padding:6px;border-radius:6px}
+.prj-card:hover .prj-card-del{opacity:1}
+.prj-card-del:hover{background:var(--red);color:#fff}
+.prj-card-new{border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px;color:var(--text3);text-align:center}
+.prj-card-new:hover{border-color:var(--blue);color:var(--blue);background:var(--surface)}
+.login-screen.hide{display:none}
+.login-bg-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;pointer-events:none}
+.login-card{width:420px;max-width:92vw;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:40px 36px 32px;box-shadow:0 24px 80px rgba(37,99,235,.12),0 2px 12px rgba(0,0,0,.05);position:relative;z-index:1}
+.login-logo{font-size:20px;font-weight:800;color:var(--green);margin-bottom:2px;display:flex;align-items:center;gap:10px;letter-spacing:-.3px}
+.login-sub{font-size:12px;color:var(--text3);margin-bottom:24px}
+.login-tabs{display:flex;gap:0;background:var(--surface);border-radius:8px;padding:3px;margin-bottom:20px}
+.login-tab{flex:1;padding:7px;border-radius:6px;font-size:13px;font-weight:600;color:var(--text2);text-align:center;cursor:pointer;transition:.15s}
+.login-tab.active{background:#fff;color:var(--green);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.login-err{display:none;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;font-size:12px;color:#dc2626;margin-bottom:12px;align-items:center;gap:8px;animation:errIn .2s ease}
+.login-err.show{display:flex}
+@keyframes errIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.login-ok.show{display:flex;animation:errIn .2s ease}
+.login-ok{display:none;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:12px;color:#16a34a;margin-bottom:12px;align-items:center;gap:8px}
+.login-ok.show{display:flex}
+.login-srv-status{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:5px}
+.srv-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.srv-dot.checking{background:#f59e0b;animation:pulse 1s infinite}
+.srv-dot.ok{background:#22c55e}
+.srv-dot.fail{background:#ef4444}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.login-btn-p{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit}
+.login-btn-p:hover{background:var(--green2)}
+.login-btn-p:active{transform:scale(.98)}
+.login-btn-p:disabled{opacity:.6;cursor:not-allowed}
+.login-divider{text-align:center;font-size:11px;color:var(--text3);margin:12px 0;position:relative}
+.login-divider::before{content:'';position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border)}
+.login-divider span{background:#fff;padding:0 10px;position:relative}
+
+/*=== PANEL TOGGLE ===*/
+[data-panel]{display:none}
+[data-panel].show{display:block}
+
+/*=== GRAPH AREA ===*/
+.graph-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:800px){.graph-row{grid-template-columns:1fr}}
+.bar-wrap{display:flex;flex-direction:column;gap:6px}
+.bar-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.bar-label{width:70px;text-align:right;color:var(--text2);flex-shrink:0}
+.bar-track{flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .3s}
+.bar-val{width:30px;font-family:var(--mono);color:var(--text3);font-size:10px}
+
+/* Non-sidebar pages fill full width */
+#page-area > .page-content{flex:1;min-width:0}
+.pg-with-sb{display:none;flex:1;min-height:0;overflow:hidden}
+.pg-with-sb.show-page{display:flex !important}
+
+@media(max-width:700px){.inner-sb{display:none}.page-inner{padding:16px 14px 60px}}
+
+/*=== DB wide page (fill screen) ===*/
+.page-inner.db-wide{max-width:none;padding:24px 32px 60px}
+.page-inner.db-wide .card{margin-bottom:18px}
+.page-inner.db-wide .card-b{padding:16px}
+.page-inner.db-wide .sql-box{padding:2px}
+.page-inner.db-wide table.tbl{margin:2px 0}
+.db-editable{cursor:text}
+.db-editable:focus{outline:2px solid var(--green);outline-offset:-2px;background:var(--bg2)}
+.db-null{color:var(--dim);font-style:italic}
+
+/* 스크롤 영역 벽에 안 붙게 */
+.card-b[style*="overflow-x"]{padding:14px 16px}
+#dbTblEditEl{padding:2px 0}
+#sqlRes{padding:14px 16px}
+
+/*=== ONBOARDING HERO (Firebase-style) ===*/
+.onb-hero{display:block;margin-bottom:24px}
+.onb-card{background:linear-gradient(135deg,#1a1d24,#0f1116);border-radius:20px;padding:56px 60px;display:flex;align-items:center;gap:40px;color:#fff;overflow:hidden;position:relative}
+.onb-left{flex:1;min-width:0;max-width:520px}
+.onb-left h1{color:#fff;font-size:36px;margin:0 0 14px;letter-spacing:-.5px}
+.onb-left p{color:#a8b0ba;font-size:15px;line-height:1.6;margin:0 0 28px}
+.onb-cta{background:transparent;border:1.5px solid #ff8c3a;color:#ff8c3a;padding:11px 32px;border-radius:22px;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.onb-cta:hover{background:#ff8c3a;color:#fff;transform:translateY(-1px)}
+.onb-art{width:280px;height:280px;position:relative;flex-shrink:0}
+.onb-orb{width:220px;height:220px;position:absolute;top:30px;left:30px;filter:drop-shadow(0 20px 40px rgba(255,107,26,.35))}
+.onb-orbit{position:absolute;background:#fff;color:#ff6b1a;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.onb-o1{top:30px;right:-8px;background:linear-gradient(135deg,#ff8c3a,#ff6b1a);color:#fff}
+.onb-o2{bottom:60px;right:-20px;background:#fff;color:#ff6b1a;width:52px;height:52px}
+.onb-o3{bottom:20px;right:44px;background:linear-gradient(135deg,#ffbf40,#ff9020);color:#fff;width:38px;height:38px;font-size:18px}
+.onb-learn{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 28px;margin-bottom:24px}
+.onb-learn-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:16px}
+.onb-learn-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.onb-learn-item{display:flex;gap:12px;align-items:center;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+.onb-learn-ico{width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--text2)}
+.onb-learn-q{font-size:13px;font-weight:600;color:var(--text)}
+.onb-learn-a{font-size:11px;color:var(--text3);margin-top:2px}
+@media(max-width:900px){.onb-card{flex-direction:column;padding:32px 24px;text-align:center}.onb-left{max-width:none}.onb-art{width:220px;height:220px}.onb-orb{width:180px;height:180px;top:20px;left:20px}}
+
+/*=== Region picker (in modal) ===*/
+.rgn-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.rgn-item{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;background:var(--surface);transition:all .1s}
+.rgn-item:hover{border-color:var(--text3);background:var(--bg2)}
+.rgn-item.sel{border-color:var(--green);background:rgba(64,180,110,.08)}
+.rgn-flag{font-size:22px}
+.rgn-name{flex:1;font-weight:600;font-size:14px}
+.rgn-ping{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.rgn-rec{background:var(--green);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;margin-left:6px}
+.mdl.mdl-wide{width:560px}
+
+/*=== CUSTOM MODAL (prompt/confirm 대체) ===*/
+.mdl-back{position:fixed;inset:0;background:rgba(15,20,30,.5);backdrop-filter:blur(3px);z-index:99990;display:none;align-items:center;justify-content:center;animation:mdlIn .12s}
+.mdl-back.open{display:flex}
+@keyframes mdlIn{from{opacity:0}to{opacity:1}}
+.mdl{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:440px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;animation:mdlPop .15s ease}
+@keyframes mdlPop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.mdl-h{padding:16px 20px 4px;font-size:16px;font-weight:700;color:var(--text)}
+.mdl-msg{padding:2px 20px 14px;font-size:13px;color:var(--text2);line-height:1.5}
+.mdl-b{padding:0 20px 16px}
+.mdl-f{padding:12px 20px 16px;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+</style>
+</head>
+<style>#sleepOverlay{display:none}
+</style>
+<body>
+<div class="toast-area" id="toasts"></div>
+
+<!-- CUSTOM MODAL (prompt/confirm 대체) -->
+<div class="mdl-back" id="mdlBack">
+  <div class="mdl" id="mdlBox">
+    <div class="mdl-h" id="mdlTitle">제목</div>
+    <div class="mdl-msg" id="mdlMsg" style="display:none"></div>
+    <div class="mdl-b" id="mdlBody">
+      <input class="inp" id="mdlInput" placeholder="" onkeydown="if(event.key==='Enter')mdlOK();if(event.key==='Escape')mdlCancel()">
+    </div>
+    <div class="mdl-slot" id="mdlSlot" style="padding:0 20px 8px;display:none"></div>
+    <div class="mdl-f">
+      <button class="btn btn-s" onclick="mdlCancel()">취소</button>
+      <button class="btn btn-p" onclick="mdlOK()" id="mdlOKBtn">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- SLEEP OVERLAY -->
+<div id="sleepOverlay" style="position:fixed;inset:0;background:rgba(15,15,20,0.92);z-index:99997;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+  <div style="text-align:center">
+    <div style="font-size:48px;margin-bottom:12px">😴</div>
+    <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:6px">서버가 슬립 중입니다</div>
+    <div style="font-size:13px;color:#aaa;margin-bottom:20px">서버 PC가 꺼졌거나 네트워크 연결이 끊어졌어요</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button onclick="retrySrv()" style="padding:10px 22px;background:#2563eb;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🔄 다시 연결</button>
+      <button onclick="document.getElementById('sleepOverlay').style.display='none';logout()" style="padding:10px 22px;background:#374151;color:#fff;border:none;border-radius:8px;font-size:14px;cursor:pointer">로그아웃</button>
+    </div>
+    <div id="sleepRetryMsg" style="margin-top:12px;font-size:12px;color:#6b7280"></div>
+  </div>
+</div>
+
+<!-- ============ 랜딩 (마케팅 홈) ============ -->
+<div class="lnd-screen" id="lndScr">
+  <nav class="lnd-nav">
+    <div class="lnd-nav-logo">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/></svg>
+      AOAO Cloud
+    </div>
+    <div class="lnd-nav-right">
+      <a href="#features" class="lnd-nav-link">기능</a>
+      <a href="#security" class="lnd-nav-link">보안</a>
+      <button class="lnd-btn lnd-btn-ghost" onclick="showScreen('login')">로그인</button>
+      <button class="lnd-btn lnd-btn-p" onclick="showScreen('login');switchLoginTab('register')">시작하기</button>
+    </div>
+  </nav>
+
+  <section class="lnd-hero">
+    <div class="lnd-hero-badge">✨ 셀프 호스팅 클라우드 백엔드</div>
+    <h1 class="lnd-hero-title">주말 프로젝트를<br><span class="lnd-hero-grad">진짜 서비스</span>로 만드는 백엔드</h1>
+    <p class="lnd-hero-sub">데이터베이스 · 스토리지 · 서버리스 · 배포까지. API 하나로. 프론트 코드 몇 줄로.</p>
+    <div class="lnd-hero-cta">
+      <button class="lnd-btn lnd-btn-p lnd-btn-lg" onclick="showScreen('login');switchLoginTab('register')">무료로 시작 →</button>
+      <button class="lnd-btn lnd-btn-ghost lnd-btn-lg" onclick="showScreen('login')">로그인</button>
+    </div>
+    <div class="lnd-hero-code">
+      <div class="lnd-code-bar"><span class="lnd-code-dot" style="background:#ff5f57"></span><span class="lnd-code-dot" style="background:#febc2e"></span><span class="lnd-code-dot" style="background:#28c840"></span><span class="lnd-code-title">quickstart.py</span></div>
+<pre class="lnd-code-body">from aoaocloud_client import AOAOCloud
+cloud = AOAOCloud("https://your-server", api_key="aoao_...")
+
+<span class="lnd-code-c"># SQL 그대로</span>
+cloud.s3.sql("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)")
+
+<span class="lnd-code-c"># Lambda 배포</span>
+cloud.lambda_fn.create("hello", "def handler(e): return 'hi ' + e['name']")
+
+<span class="lnd-code-c"># 정적 사이트 배포</span>
+cloud.lightsail.deploy_html("&lt;h1&gt;Hello&lt;/h1&gt;")</pre>
+    </div>
+  </section>
+
+  <section class="lnd-features" id="features">
+    <h2 class="lnd-sec-title">필요한 건 다 있어요</h2>
+    <div class="lnd-feat-grid">
+      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#22c55e20;color:#22c55e"><i data-lucide="database-zap"></i></div><h3>데이터베이스</h3><p>SQLite 기반 · SQL 에디터, 테이블 편집, RLS 정책까지</p></div>
+      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#3b82f620;color:#3b82f6"><i data-lucide="cloud"></i></div><h3>스토리지</h3><p>S3/EBS/CloudFront · 파일 저장 · CDN 서빙</p></div>
+      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#f59e0b20;color:#f59e0b"><i data-lucide="zap"></i></div><h3>Lambda</h3><p>Python 함수 서버리스 실행 · 이벤트로 트리거</p></div>
+      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#a855f720;color:#a855f7"><i data-lucide="terminal"></i></div><h3>EC2</h3><p>가상 셸 · 명령 실행 · AI 위험도 검사</p></div>
+      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#ec489920;color:#ec4899"><i data-lucide="rocket"></i></div><h3>Lightsail</h3><p>HTML 한번 업로드 → 공유 링크 즉시 생성</p></div>
+      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#06b6d420;color:#06b6d4"><i data-lucide="activity"></i></div><h3>CloudWatch</h3><p>실시간 요청 · 저장소 · 오류율 모니터링</p></div>
+    </div>
+  </section>
+
+  <section class="lnd-security" id="security">
+    <h2 class="lnd-sec-title">보안이 기본</h2>
+    <div class="lnd-sec-grid">
+      <div class="lnd-sec-item"><span class="lnd-check">✓</span> PBKDF2 200k 라운드 비밀번호 해싱</div>
+      <div class="lnd-sec-item"><span class="lnd-check">✓</span> anon · secret 키 자동 발급 (Supabase 스타일)</div>
+      <div class="lnd-sec-item"><span class="lnd-check">✓</span> Row-Level Security 정책 지원</div>
+      <div class="lnd-sec-item"><span class="lnd-check">✓</span> 유저별 물리적 DB 파일 격리</div>
+      <div class="lnd-sec-item"><span class="lnd-check">✓</span> Rate limit · 쿼리 타임아웃 · body 크기 제한</div>
+      <div class="lnd-sec-item"><span class="lnd-check">✓</span> 타이밍 공격 방지 · 상수시간 비교</div>
+    </div>
+  </section>
+
+  <footer class="lnd-foot">
+    <div>Made by <b>AOAO Studio</b> ☁️</div>
+    <div class="lnd-foot-links">
+      <button class="lnd-btn lnd-btn-p" onclick="showScreen('login');switchLoginTab('register')">지금 시작하기</button>
+    </div>
+  </footer>
+</div>
+
+<!-- ============ 프로젝트 목록 (로그인 후) ============ -->
+<div class="prj-screen" id="prjScr">
+  <div class="prj-topbar">
+    <div class="tb-logo"><i data-lucide="cloud-lightning" style="width:18px;height:18px"></i> AOAO Cloud</div>
+    <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+      <div class="prj-user" id="prjUser">-</div>
+      <button class="btn btn-s btn-sm" onclick="logout()"><i data-lucide="log-out"></i> 로그아웃</button>
+    </div>
+  </div>
+  <div class="prj-body">
+    <div class="prj-head">
+      <div>
+        <h1 style="margin:0;font-size:26px">프로젝트</h1>
+        <p style="margin:6px 0 0;color:var(--text3);font-size:13px">진입할 프로젝트를 선택하거나 새로 만드세요.</p>
+      </div>
+      <button class="btn btn-p" onclick="prjNew()"><i data-lucide="plus"></i> 새 프로젝트</button>
+    </div>
+    <div class="prj-grid" id="prjGrid"><div class="empty">로딩 중...</div></div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScr">
+<!-- 배경 blob -->
+<div class="login-bg-blob" style="width:400px;height:400px;background:#3b82f6;top:-100px;right:-80px"></div>
+<div class="login-bg-blob" style="width:300px;height:300px;background:#7c3aed;bottom:-80px;left:-60px"></div>
+<div class="login-card">
+  <div class="login-logo">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/></svg>
+    AOAO Cloud
+  </div>
+  <div class="login-sub">셀프 호스팅 클라우드 플랫폼</div>
+
+  <!-- 서버 URL -->
+  <div class="field" style="margin-bottom:16px">
+    <label>서버 URL</label>
+    <input class="inp" id="iSrv" value="https://valium-phony-alumni.ngrok-free.dev" oninput="onSrvInput()" style="padding-right:90px">
+    <div class="login-srv-status" id="srvStatus">
+      <span class="srv-dot checking" id="srvDot"></span>
+      <span id="srvMsg" style="color:var(--text3)">서버 확인 중...</span>
+    </div>
+  </div>
+
+  <!-- 탭 (로그인/회원가입) -->
+  <div class="login-tabs">
+    <div class="login-tab active" id="tabLogin" onclick="switchLoginTab('login')">로그인</div>
+    <div class="login-tab" id="tabRegister" onclick="switchLoginTab('register')">회원가입</div>
+  </div>
+
+  <!-- 에러/성공 메시지 -->
+  <div class="login-err" id="loginErr">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    <span id="loginErrTxt"></span>
+  </div>
+  <div class="login-ok" id="loginOk">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    <span id="loginOkTxt"></span>
+  </div>
+
+  <div class="field"><label>사용자명</label><input class="inp" id="iUser" placeholder="username" onkeydown="if(event.key==='Enter')loginAction()"></div>
+  <div class="field" style="margin-bottom:20px"><label>비밀번호</label><input class="inp" id="iPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')loginAction()"></div>
+
+  <button class="login-btn-p" id="loginActionBtn" onclick="loginAction()">
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/></svg>
+    <span id="loginBtnTxt">로그인</span>
+  </button>
+</div>
+</div>
+
+<!-- APP SHELL -->
+<div id="app">
+<!-- TOPBAR -->
+<div id="topbar">
+<div class="tb-logo" onclick="prjBack()" style="cursor:pointer" title="프로젝트 목록으로"><i data-lucide="cloud-lightning" style="width:18px;height:18px"></i> AOAO Cloud</div>
+<div class="tb-sep"></div>
+<div class="tb-item" onclick="prjBack()" title="프로젝트 목록"><i data-lucide="arrow-left" style="width:13px;height:13px"></i> 프로젝트</div>
+<div class="tb-sep"></div>
+<div class="tb-item" id="projBtn" onclick="document.getElementById('projDD').classList.toggle('open')">
+<i data-lucide="box" style="width:13px;height:13px"></i>
+<span id="projLabel">Default</span>
+<span class="tb-badge" style="background:#333;color:#999">FREE</span>
+<i data-lucide="chevron-down" style="width:12px;height:12px;opacity:.5"></i>
+<!-- Project Dropdown -->
+<div class="proj-dd" id="projDD" onclick="event.stopPropagation()">
+<div class="proj-dd-title">프로젝트</div>
+<div id="projList"></div>
+<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:4px">
+<div class="proj-dd-item" style="color:var(--green)" onclick="newProject()"><i data-lucide="plus" style="width:12px;height:12px"></i> 새 프로젝트</div>
+</div>
+</div>
+</div>
+<div class="tb-right">
+<div class="tb-item" onclick="logout()"><i data-lucide="log-out" style="width:13px;height:13px"></i> 로그아웃</div>
+<div class="tb-avatar" id="avatar">U</div>
+</div>
+</div>
+
+<!-- BODY -->
+<div id="body-row">
+<!-- ICON SIDEBAR -->
+<div id="sidebar">
+<div class="sb-btn active" onclick="nav('dash',this)"><i data-lucide="layout-dashboard"></i><span class="sb-tip">대시보드</span></div>
+<div class="sb-btn" onclick="nav('ec2',this)"><i data-lucide="monitor"></i><span class="sb-tip">EC2</span></div>
+<div class="sb-btn" onclick="nav('lambda',this)"><i data-lucide="zap"></i><span class="sb-tip">Lambda</span></div>
+<div class="sb-btn" onclick="nav('s3',this)"><i data-lucide="database"></i><span class="sb-tip">S3</span></div>
+<div class="sb-btn" onclick="nav('database',this)"><i data-lucide="database-zap"></i><span class="sb-tip">데이터베이스</span></div>
+<div class="sb-btn" onclick="nav('storage',this)"><i data-lucide="hard-drive"></i><span class="sb-tip">스토리지</span></div>
+<div class="sb-btn" onclick="nav('deploy',this)"><i data-lucide="rocket"></i><span class="sb-tip">배포</span></div>
+<div class="sb-btn" onclick="nav('security',this)"><i data-lucide="shield"></i><span class="sb-tip">보안</span></div>
+<div class="sb-btn" onclick="nav('watch',this)"><i data-lucide="bar-chart-3"></i><span class="sb-tip">CloudWatch</span></div>
+<div class="sb-btn" onclick="nav('keys',this)"><i data-lucide="key"></i><span class="sb-tip">API Keys</span></div>
+<div class="sb-btn" onclick="nav('docs',this)"><i data-lucide="file-text"></i><span class="sb-tip">API 문서</span></div>
+<div class="sb-btn" onclick="nav('users',this)"><i data-lucide="box"></i><span class="sb-tip">유저 관리</span></div>
+<div class="sb-spacer"></div>
+<div class="sb-btn" onclick="nav('settings',this)"><i data-lucide="settings"></i><span class="sb-tip">설정</span></div>
+</div>
+
+<!-- PAGE AREA -->
+<div id="page-area">
+<!-- ======= DASHBOARD ======= -->
+<div id="pg-dash" class="page-content">
+<div class="page-inner" style="flex:1">
+<div class="ph"><h1>대시보드</h1><p>전체 리소스 현황</p></div>
+<div class="stats">
+<div class="stat"><div class="stat-label">Storage</div><div class="stat-val" id="st-sto">0 B</div><div class="stat-sub">전체 저장량</div></div>
+<div class="stat"><div class="stat-label">EC2</div><div class="stat-val" id="st-ec2">0</div><div class="stat-sub">running</div></div>
+<div class="stat"><div class="stat-label">Lambda</div><div class="stat-val" id="st-lam">0</div><div class="stat-sub">functions</div></div>
+<div class="stat"><div class="stat-label">Sites</div><div class="stat-val" id="st-site">0</div><div class="stat-sub">deployed</div></div>
+</div>
+<div class="stats">
+<div class="stat"><div class="stat-label">Total Requests</div><div class="stat-val" id="st-req">-</div><div class="stat-sub">24h</div></div>
+<div class="stat"><div class="stat-label">Avg Response</div><div class="stat-val" id="st-avg">-</div><div class="stat-sub">ms</div></div>
+<div class="stat"><div class="stat-label">Errors</div><div class="stat-val" id="st-err">-</div><div class="stat-sub">count</div></div>
+<div class="stat"><div class="stat-label">Error Rate</div><div class="stat-val" id="st-rate">-</div><div class="stat-sub">%</div></div>
+</div>
+<div class="graph-row">
+<div class="card"><div class="card-h"><h3>서비스별 요청</h3></div><div class="card-b" id="svcBars"><div class="empty">데이터 로딩 중...</div></div></div>
+<div class="card"><div class="card-h"><h3>상태 요약</h3></div><div class="card-b" id="statusSummary"><div class="empty">데이터 로딩 중...</div></div></div>
+</div>
+<div class="card" style="margin-bottom:16px"><div class="card-h"><h3>📋 최근 활동</h3><button class="btn btn-s btn-sm" onclick="loadActivity()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></button></div><div class="card-b" id="activityLog" style="max-height:220px;overflow-y:auto"><div class="empty">로딩 중...</div></div></div>
+<h3 style="font-size:13px;font-weight:600;margin-bottom:10px">서비스 바로가기</h3>
+<div class="svc-grid" id="svcGrid"></div>
+</div>
+</div>
+
+<!-- ======= EC2 ======= -->
+<div id="pg-ec2" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">EC2</div>
+<div class="is-section">관리</div>
+<div class="is-item active" onclick="sp('ec2-list',this)"><i data-lucide="monitor"></i> 인스턴스</div>
+<div class="is-item" onclick="sp('ec2-term',this);ec2TermTabSwitch('tab-ec2-term',document.querySelector('[data-ec2tab=ec2-terminal]'))"><i data-lucide="terminal"></i> 터미널</div>
+<div class="is-item" onclick="sp('ec2-term',this);ec2TermTabSwitch('tab-ec2-files',document.querySelector('[data-ec2tab=ec2-files]'))"><i data-lucide="folder-open"></i> 파일 브라우저</div>
+<div class="is-item" onclick="sp('ec2-term',this);ec2TermTabSwitch('tab-ec2-hist',document.querySelector('[data-ec2tab=ec2-hist]'))"><i data-lucide="history"></i> 실행 히스토리</div>
+</div>
+<div class="page-content"><div class="page-inner">
+<div class="ph"><h1>EC2</h1><p>가상 인스턴스 + CMD 명령어 실행</p></div>
+<div data-panel="ec2-list" class="show">
+<div class="card"><div class="card-h"><h3>인스턴스</h3><button class="btn btn-s btn-sm" onclick="ec2List()"><i data-lucide="refresh-cw"></i> 새로고침</button></div>
+<div class="card-b">
+<div class="field-row"><div class="field"><label>이름</label><input class="inp" id="ec2Name" placeholder="my-server"></div>
+<button class="btn btn-p" onclick="ec2Create()"><i data-lucide="plus"></i> 생성</button></div>
+<div id="ec2ListEl" style="margin-top:12px"></div>
+</div></div>
+</div>
+<div data-panel="ec2-term">
+<div class="field"><label>인스턴스 ID</label><input class="inp" id="ec2TermId" placeholder="i-xxxx (인스턴스 목록에서 복사)" oninput="ec2TermTabSwitch('tab-ec2-term',document.querySelector('[data-ec2tab=ec2-terminal]'))"></div>
+<div class="tabs" style="margin-top:10px">
+  <div class="tab active" data-ec2tab="ec2-terminal" onclick="ec2TermTabSwitch('tab-ec2-term',this)">터미널</div>
+  <div class="tab" data-ec2tab="ec2-files" onclick="ec2TermTabSwitch('tab-ec2-files',this)">파일 브라우저</div>
+  <div class="tab" data-ec2tab="ec2-hist" onclick="ec2TermTabSwitch('tab-ec2-hist',this)">히스토리</div>
+</div>
+<div id="tab-ec2-term">
+<div class="card" style="margin-bottom:0"><div class="card-h"><h3>터미널</h3><span style="color:var(--text3);font-size:11px" id="termLabel">인스턴스를 선택하세요</span></div>
+<div class="card-b" style="padding:0">
+<div class="term" style="border:none;border-radius:0">
+<div class="term-bar"><div class="term-dot" style="background:var(--red)"></div><div class="term-dot" style="background:var(--yellow)"></div><div class="term-dot" style="background:var(--green)"></div></div>
+<div class="term-body" id="termBody">$ 명령어를 입력하세요</div>
+<div class="term-in"><span>$</span><input id="termCmd" placeholder="echo hello" onkeydown="ec2TermKeydown(event)"></div>
+</div>
+<div style="font-size:10px;color:var(--text3);padding:6px 12px 8px">⚠ format, del /f, shutdown, rm -rf 등 위험 명령 자동 차단 | ↑↓ 히스토리</div>
+</div></div>
+</div>
+<div id="tab-ec2-files" style="display:none">
+<div class="card" style="margin-bottom:0"><div class="card-h"><h3>파일 브라우저</h3>
+<button class="btn btn-s btn-sm" onclick="ec2FilesList()"><i data-lucide="refresh-cw"></i></button>
+<label class="btn btn-p btn-sm" style="cursor:pointer"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> 업로드<input type="file" id="ec2UpFile" style="display:none" onchange="ec2FileUpload()"></label>
+</div>
+<div class="card-b" id="ec2FilesEl"><div class="empty">인스턴스 ID 입력 후 새로고침</div></div>
+</div>
+</div>
+<div id="tab-ec2-hist" style="display:none">
+<div class="card" style="margin-bottom:0"><div class="card-h"><h3>명령어 히스토리</h3><button class="btn btn-s btn-sm" onclick="ec2HistLoad()"><i data-lucide="refresh-cw"></i></button></div>
+<div class="card-b" id="ec2HistEl"><div class="empty">새로고침 클릭</div></div>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+
+<!-- ======= LAMBDA ======= -->
+<div id="pg-lambda" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">Lambda</div>
+<div class="is-item active" onclick="sp('lam-list',this)"><i data-lucide="list"></i> 함수 목록</div>
+<div class="is-item" onclick="sp('lam-new',this)"><i data-lucide="plus"></i> 새 함수</div>
+<div class="is-item" onclick="sp('lam-run',this)"><i data-lucide="play"></i> 실행</div>
+</div>
+<div class="page-content"><div class="page-inner">
+<div class="ph"><h1>Lambda</h1><p>Python 함수 서버리스 실행</p></div>
+<div data-panel="lam-list" class="show"><div class="card"><div class="card-h"><h3>함수 목록</h3><button class="btn btn-s btn-sm" onclick="lamList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b" id="lamListEl"></div></div></div>
+<div data-panel="lam-new"><div class="card"><div class="card-h"><h3>새 Lambda 함수</h3></div><div class="card-b">
+<div class="field"><label>함수 이름</label><input class="inp" id="lamName" placeholder="my_function"></div>
+<div class="field"><label>코드</label><textarea class="inp ta" id="lamCode" rows="10" placeholder="def handler(event):&#10;    return event['a'] + event['b']"></textarea></div>
+<button class="btn btn-p" onclick="lamCreate()"><i data-lucide="plus"></i> 생성</button>
+</div></div></div>
+<div data-panel="lam-run"><div class="card"><div class="card-h"><h3>함수 실행</h3></div><div class="card-b">
+<div class="field"><label>함수 이름</label><input class="inp" id="lamRunName" placeholder="my_function"></div>
+<div class="field"><label>Input (JSON)</label><textarea class="inp ta" id="lamRunInput" rows="4" placeholder='{"a":10,"b":20}'></textarea></div>
+<button class="btn btn-p" onclick="lamInvoke()"><i data-lucide="play"></i> 실행</button>
+<div class="code" id="lamResult" style="margin-top:10px;display:none"></div>
+</div></div></div>
+</div></div>
+</div>
+
+<!-- ======= S3 ======= -->
+<div id="pg-s3" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">S3</div>
+<div class="is-item active" onclick="sp('s3-bkt',this)"><i data-lucide="database"></i> 버킷</div>
+<div class="is-item" onclick="sp('s3-obj',this)"><i data-lucide="file"></i> 오브젝트</div>
+<div class="is-item" onclick="sp('s3-upload',this)"><i data-lucide="upload"></i> 파일 업로드</div>
+</div>
+<div class="page-content"><div class="page-inner">
+<div class="ph"><h1>S3</h1><p>키-값 스토리지 + 파일 업로드</p></div>
+<div data-panel="s3-bkt" class="show"><div class="card"><div class="card-h"><h3>버킷</h3><button class="btn btn-s btn-sm" onclick="s3Bkts()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b">
+<div class="field-row"><div class="field"><label>버킷 이름</label><input class="inp" id="s3BktName" placeholder="my-bucket"></div>
+<button class="btn btn-p" onclick="s3CreateBkt()"><i data-lucide="plus"></i> 생성</button></div>
+<div id="s3BktList" style="margin-top:12px"></div>
+</div></div></div>
+<div data-panel="s3-obj"><div class="card"><div class="card-h"><h3>오브젝트 관리</h3></div><div class="card-b">
+<div class="field"><label>버킷</label><input class="inp" id="s3ObjBkt" placeholder="my-bucket"></div>
+<div class="field"><label>키</label><input class="inp" id="s3ObjKey" placeholder="users/1"></div>
+<div class="field"><label>값 (JSON)</label><textarea class="inp ta" id="s3ObjVal" rows="4" placeholder='{"name":"홍길동"}'></textarea></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="btn btn-p" onclick="s3Put()"><i data-lucide="save"></i> 저장</button>
+<button class="btn btn-s" onclick="s3Get()"><i data-lucide="search"></i> 조회</button>
+<button class="btn btn-d btn-sm" onclick="s3Del()"><i data-lucide="trash-2"></i> 삭제</button>
+<button class="btn btn-g btn-sm" onclick="s3ObjList()" style="margin-left:auto">목록</button>
+</div>
+<div class="code" id="s3Result" style="margin-top:10px;display:none"></div>
+<div id="s3ObjListEl" style="margin-top:12px"></div>
+</div></div></div>
+<div data-panel="s3-upload"><div class="card"><div class="card-h"><h3>파일 업로드</h3></div><div class="card-b">
+<div class="field"><label>버킷</label><input class="inp" id="s3UpBkt" placeholder="my-bucket"></div>
+<div class="field"><label>키 (선택, 비우면 파일명)</label><input class="inp" id="s3UpKey" placeholder="uploads/photo.jpg"></div>
+<label class="fdrop"><i data-lucide="upload-cloud"></i><div style="font-size:12px;font-weight:500">파일을 클릭해서 선택</div><div style="font-size:10px;color:var(--text3)">모든 파일 타입 지원</div><input type="file" id="s3UpFile"></label>
+<div id="s3UpInfo" style="margin-top:8px"></div>
+<button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="s3Upload()"><i data-lucide="upload"></i> 업로드</button>
+</div></div></div>
+</div></div>
+</div>
+
+<!-- ======= DATABASE ======= -->
+<div id="pg-database" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">데이터베이스</div>
+<div class="is-section">도구</div>
+<div class="is-item active" onclick="sp('db-sql',this)"><i data-lucide="terminal-square"></i> SQL 에디터</div>
+<div class="is-item" onclick="sp('db-tbl',this);dbTblLoad()"><i data-lucide="table-2"></i> 테이블 에디터</div>
+<div class="is-item" onclick="sp('db-rls',this);dbRlsLoad()"><i data-lucide="shield-check"></i> RLS 정책</div>
+</div>
+<div class="page-content"><div class="page-inner db-wide">
+<div class="ph"><h1>데이터베이스</h1><p>SQLite 기반 · SQL 에디터 · 테이블 편집 · RLS(행 수준 보안)</p></div>
+
+<!-- === SQL EDITOR === -->
+<div data-panel="db-sql" class="show">
+<div class="card"><div class="card-h"><h3>🤖 AI SQL 도우미</h3></div><div class="card-b">
+<div class="field-row">
+<div class="field"><label>한국어로 원하는 쿼리 설명</label><input class="inp" id="aiPrompt" placeholder="예: 유저 테이블 만들고 3명 넣어줘, 가격 높은 순 정렬해줘"></div>
+<button class="btn btn-p" onclick="aiSQL()"><i data-lucide="zap"></i> AI 생성</button>
+</div>
+<div style="font-size:11px;color:var(--text3);margin-top:4px">Groq AI가 자연어를 SQL로 변환합니다. <code style="background:var(--surface);padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:10px">GROQ_API_KEY</code>가 서버에 설정되어야 함.</div>
+</div></div>
+
+<div class="card"><div class="card-h"><h3>쿼리</h3><button class="btn btn-p btn-sm" onclick="sqlRun()"><i data-lucide="play"></i> 실행 (Ctrl+Enter)</button></div><div class="card-b">
+<div class="sql-box"><div class="sql-bar"><span style="font-size:10px;color:var(--text3);font-family:var(--mono)">SQL</span>
+<button class="btn btn-g btn-sm" style="margin-left:auto" onclick="$('sqlTA').value=SQLEX.create">테이블 예시</button>
+<button class="btn btn-g btn-sm" onclick="$('sqlTA').value=SQLEX.full">전체 예시</button>
+</div>
+<textarea class="sql-ta" id="sqlTA" placeholder="SELECT * FROM my_table;"></textarea></div>
+</div></div>
+<div class="card"><div class="card-h"><h3>결과</h3></div><div class="card-b" id="sqlRes"><div class="empty">쿼리 실행 후 표시</div></div></div>
+</div>
+
+<!-- === TABLE EDITOR === -->
+<div data-panel="db-tbl">
+<div class="card"><div class="card-h">
+<h3>테이블 목록</h3>
+<button class="btn btn-s btn-sm" onclick="dbTblLoad()"><i data-lucide="refresh-cw"></i> 새로고침</button>
+<button class="btn btn-p btn-sm" onclick="dbTblNew()"><i data-lucide="plus"></i> 새 테이블</button>
+</div>
+<div class="card-b" id="dbTblListEl"><div class="empty">로딩 중...</div></div>
+</div>
+
+<div class="card" id="dbTblEditCard" style="display:none"><div class="card-h">
+<h3 id="dbTblEditTitle">테이블 편집</h3>
+<span id="dbTblCount" style="color:var(--text3);font-size:12px"></span>
+<button class="btn btn-s btn-sm" onclick="dbTblOpen(_dbCurTbl)"><i data-lucide="refresh-cw"></i></button>
+<button class="btn btn-p btn-sm" onclick="dbRowNew()"><i data-lucide="plus"></i> 새 행</button>
+<button class="btn btn-d btn-sm" onclick="dbTblDrop()"><i data-lucide="trash-2"></i> 테이블 삭제</button>
+</div>
+<div class="card-b" style="overflow-x:auto" id="dbTblEditEl"></div>
+</div>
+</div>
+
+<!-- === RLS === -->
+<div data-panel="db-rls">
+<div class="card"><div class="card-h"><h3>RLS 정책</h3>
+<button class="btn btn-s btn-sm" onclick="dbRlsLoad()"><i data-lucide="refresh-cw"></i></button>
+</div>
+<div class="card-b">
+<div style="background:var(--surface);border-radius:8px;padding:12px 14px;font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.6">
+  <b>🛡 RLS (Row-Level Security)</b><br>
+  테이블별로 어떤 API 키가 <b>읽기/쓰기</b> 가능한지 정함. <code style="background:var(--bg2);padding:1px 4px;border-radius:3px">*</code> = 모든 키.<br>
+  정책은 SQL 에디터 + 테이블 에디터 양쪽 다 적용됨. 규칙 없으면 기본 허용.
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 90px 90px auto;gap:8px;align-items:end;padding:12px;background:var(--surface);border-radius:8px;margin-bottom:10px">
+<div class="field" style="margin:0"><label>테이블명</label><input class="inp" id="rlsTbl" placeholder="products"></div>
+<div class="field" style="margin:0"><label>API 키</label><input class="inp" id="rlsKey" placeholder="* (모든 키)"></div>
+<div class="dd" data-dd="rlsRead"><label style="font-size:12px;color:var(--text2);margin-bottom:5px;display:block">읽기</label>
+  <div class="dd-trigger" onclick="ddToggle('rlsRead')"><span class="dd-val" data-val="1">허용</span>
+    <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="dd-menu"><div class="dd-opt sel" onclick="ddPick('rlsRead','1','허용')">허용</div><div class="dd-opt" onclick="ddPick('rlsRead','0','차단')">차단</div></div>
+</div>
+<div class="dd" data-dd="rlsWrite"><label style="font-size:12px;color:var(--text2);margin-bottom:5px;display:block">쓰기</label>
+  <div class="dd-trigger" onclick="ddToggle('rlsWrite')"><span class="dd-val" data-val="1">허용</span>
+    <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="dd-menu"><div class="dd-opt sel" onclick="ddPick('rlsWrite','1','허용')">허용</div><div class="dd-opt" onclick="ddPick('rlsWrite','0','차단')">차단</div></div>
+</div>
+<button class="btn btn-p" onclick="dbRlsAdd()"><i data-lucide="plus"></i> 추가</button>
+</div>
+
+<div id="dbRlsListEl"><div class="empty">로딩 중...</div></div>
+</div></div>
+</div>
+
+</div></div>
+</div>
+
+<!-- ======= STORAGE ======= -->
+<div id="pg-storage" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">스토리지</div>
+<div class="is-item active" onclick="sp('sto-ebs',this)"><i data-lucide="hard-drive"></i> EBS</div>
+<div class="is-item" onclick="sp('sto-cf',this)"><i data-lucide="cloud"></i> CloudFront</div>
+<div class="is-item" onclick="sp('sto-cfn',this)"><i data-lucide="clock"></i> CloudFormation</div>
+<div class="is-item" onclick="sp('sto-ws',this)"><i data-lucide="folder"></i> WorkSpaces</div>
+<div class="is-item" onclick="sp('sto-kin',this)"><i data-lucide="file-search"></i> Kinesis</div>
+<div class="is-item" onclick="sp('sto-emr',this)"><i data-lucide="box"></i> EMR</div>
+</div>
+<div class="page-content"><div class="page-inner">
+<div class="ph"><h1>스토리지</h1><p>EBS, CloudFront, CloudFormation, WorkSpaces, Kinesis, EMR</p></div>
+<div data-panel="sto-ebs" class="show"><div class="card"><div class="card-h"><h3>EBS - 압축 저장</h3></div><div class="card-b">
+<div class="field-row"><div class="field"><label>볼륨 이름</label><input class="inp" id="ebsName" placeholder="data-vol"></div><button class="btn btn-p" onclick="ebsCreate()"><i data-lucide="plus"></i></button><button class="btn btn-s btn-sm" onclick="ebsList()"><i data-lucide="refresh-cw"></i></button></div>
+<div id="ebsListEl" style="margin-top:10px"></div>
+<hr style="border:0;border-top:1px solid var(--border);margin:14px 0">
+<div class="field"><label>볼륨</label><input class="inp" id="ebsV" placeholder="볼륨명"></div>
+<div class="field"><label>키</label><input class="inp" id="ebsK" placeholder="key"></div>
+<div class="field"><label>값</label><textarea class="inp ta" id="ebsVal" rows="3" placeholder="데이터"></textarea></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-p" onclick="ebsPut()">저장</button><button class="btn btn-s" onclick="ebsGet()">조회</button><button class="btn btn-g btn-sm" onclick="ebsDataList()" style="margin-left:auto">전체 데이터 목록</button></div>
+<div class="code" id="ebsRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+<div data-panel="sto-cf"><div class="card"><div class="card-h"><h3>CloudFront - 압축 캐시</h3></div><div class="card-b">
+<div class="field"><label>키</label><input class="inp" id="cfK" placeholder="my-data"></div>
+<div class="field"><label>콘텐츠</label><textarea class="inp ta" id="cfV" rows="3" placeholder="데이터"></textarea></div>
+<div style="display:flex;gap:6px"><button class="btn btn-p" onclick="cfStore()">저장</button><button class="btn btn-s" onclick="cfGet()">조회</button><button class="btn btn-g btn-sm" onclick="cfList()">목록</button></div>
+<div class="code" id="cfRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+<div data-panel="sto-cfn"><div class="card"><div class="card-h"><h3>CloudFormation - 임시 JSON</h3></div><div class="card-b">
+<div class="field-row"><div class="field"><label>이름</label><input class="inp" id="cfnN" placeholder="stack"></div><div class="field"><label>TTL (분)</label><input class="inp" id="cfnT" value="30" type="number" style="width:80px"></div></div>
+<div class="field"><label>JSON</label><textarea class="inp ta" id="cfnD" rows="3" placeholder='{"key":"value"}'></textarea></div>
+<div style="display:flex;gap:6px"><button class="btn btn-p" onclick="cfnCreate()">저장</button><button class="btn btn-s" onclick="cfnList()">목록</button></div>
+<div class="code" id="cfnRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+<div data-panel="sto-ws"><div class="card"><div class="card-h"><h3>WorkSpaces - 파일 공유</h3></div><div class="card-b">
+<label class="fdrop"><i data-lucide="upload-cloud"></i><div style="font-size:12px;font-weight:500">파일 업로드</div><input type="file" id="wsFile"></label>
+<button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="wsUpload()">업로드</button>
+<button class="btn btn-s" style="margin-top:8px;width:100%;justify-content:center" onclick="wsList()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg> 파일 목록 새로고침</button>
+<div id="wsListEl" style="margin-top:10px"></div>
+</div></div></div>
+<div data-panel="sto-kin"><div class="card"><div class="card-h"><h3>Kinesis - 파일 분류</h3></div><div class="card-b">
+<div class="field-row"><div class="field"><label>파일명</label><input class="inp" id="kinF" placeholder="photo.jpg"></div><button class="btn btn-p" onclick="kinClass()">분류</button></div>
+<div class="code" id="kinRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+<div data-panel="sto-emr"><div class="card"><div class="card-h"><h3>EMR - 저장소 할당</h3></div><div class="card-b">
+<div class="field-row"><div class="field"><label>이름</label><input class="inp" id="emrN" placeholder="config"></div><div class="field"><label>디렉토리</label><input class="inp" id="emrD" placeholder="data/"></div><div class="field"><label>최대 MB</label><input class="inp" id="emrM" value="100" type="number" style="width:80px"></div></div>
+<div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-p" onclick="emrAdd()">추가</button><button class="btn btn-s" onclick="emrList()">목록</button></div>
+<div class="code" id="emrRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+</div></div>
+</div>
+
+<!-- ======= DEPLOY ======= -->
+<div id="pg-deploy" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">배포</div>
+<div class="is-item active" onclick="sp('dp-ls',this)"><i data-lucide="globe"></i> Lightsail</div>
+<div class="is-item" onclick="sp('dp-eb',this)"><i data-lucide="server"></i> Elastic Beanstalk</div>
+<div class="is-item" onclick="sp('dp-r53',this)"><i data-lucide="link"></i> Route53</div>
+<div class="is-item" onclick="sp('dp-elb',this)"><i data-lucide="activity"></i> ELB</div>
+</div>
+<div class="page-content"><div class="page-inner">
+<div class="ph"><h1>배포</h1><p>Lightsail, EB, Route53, ELB</p></div>
+<div data-panel="dp-ls" class="show"><div class="card"><div class="card-h"><h3>Lightsail - HTML 배포</h3><button class="btn btn-s btn-sm" onclick="lsList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b">
+<div class="field"><label>사이트 이름</label><input class="inp" id="lsN" placeholder="my-site"></div>
+<div class="field"><label>HTML 코드</label><textarea class="inp ta" id="lsH" rows="8" placeholder="<h1>Hello!</h1>"></textarea></div>
+<button class="btn btn-p" onclick="lsDeploy()"><i data-lucide="rocket"></i> 배포</button>
+<div id="lsListEl" style="margin-top:12px"></div>
+</div></div></div>
+<div data-panel="dp-eb"><div class="card"><div class="card-h"><h3>Elastic Beanstalk - 앱 배포</h3><button class="btn btn-s btn-sm" onclick="ebList()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></button></div><div class="card-b">
+<div class="field"><label>앱 이름</label><input class="inp" id="ebN" placeholder="my-flask-app"></div>
+<label class="fdrop"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg><div style="font-size:12px;font-weight:500">.py 또는 .js 파일</div><div style="font-size:10px;color:var(--text3)">500줄 / 100KB 이하 · Groq AI 보안 검사</div><input type="file" id="ebF" accept=".py,.js"></label>
+<button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="ebDeploy()">🚀 배포</button>
+<div id="ebRes" class="code" style="margin-top:8px;display:none"></div>
+<div id="ebListEl" style="margin-top:12px"></div>
+</div></div></div>
+<div data-panel="dp-r53"><div class="card"><div class="card-h"><h3>Route53 - DB 연결</h3></div><div class="card-b">
+<div class="field"><label>이름</label><input class="inp" id="r53N" placeholder="record"></div>
+<div class="field"><label>대상 ID</label><input class="inp" id="r53T" placeholder="ls-xxx"></div>
+<button class="btn btn-p" onclick="r53Add()">레코드 생성</button>
+<div class="code" id="r53Res" style="margin-top:8px;display:none"></div>
+</div></div></div>
+<div data-panel="dp-elb"><div class="card"><div class="card-h"><h3>ELB - Load Balancer</h3></div><div class="card-b">
+<div class="field"><label>이름</label><input class="inp" id="elbN" placeholder="lb"></div>
+<div class="field"><label>최대 동시접속</label><input class="inp" id="elbM" value="100" type="number"></div>
+<div style="display:flex;gap:6px"><button class="btn btn-p" onclick="elbSet()">저장</button><button class="btn btn-s" onclick="elbGet()">조회</button></div>
+<div class="code" id="elbRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+</div></div>
+</div>
+
+<!-- ======= SECURITY ======= -->
+<div id="pg-security" class="pg-with-sb">
+<div class="inner-sb">
+<div class="is-title">보안</div>
+<div class="is-item active" onclick="sp('sec-vpc',this)"><i data-lucide="shield"></i> VPC</div>
+<div class="is-item" onclick="sp('sec-as',this)"><i data-lucide="trending-up"></i> Auto Scaling</div>
+</div>
+<div class="page-content"><div class="page-inner">
+<div class="ph"><h1>보안</h1><p>VPC 접근제어 + Auto Scaling 트래픽 관리</p></div>
+<div data-panel="sec-vpc" class="show"><div class="card"><div class="card-h"><h3>VPC 규칙</h3><button class="btn btn-s btn-sm" onclick="vpcList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b">
+<div class="field-row">
+<div class="field"><label>타입</label>
+<div class="dd" id="dd-vpc">
+  <div class="dd-trigger" onclick="ddToggle('dd-vpc')">
+    <span class="dd-val" id="dd-vpc-val">block_ip</span>
+    <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="dd-menu" id="dd-vpc-menu">
+    <div class="dd-opt sel" onclick="ddSelect('dd-vpc','block_ip',this)">block_ip</div>
+    <div class="dd-opt" onclick="ddSelect('dd-vpc','allow_ip',this)">allow_ip</div>
+    <div class="dd-opt" onclick="ddSelect('dd-vpc','block_crawler',this)">block_crawler</div>
+  </div>
+</div>
+<input type="hidden" id="vpcT" value="block_ip">
+</div>
+<div class="field"><label>값</label><input class="inp" id="vpcV" placeholder="192.168.1.1"></div>
+<button class="btn btn-p" onclick="vpcAdd()"><i data-lucide="plus"></i></button></div>
+<div id="vpcListEl" style="margin-top:10px"></div>
+</div></div></div>
+<div data-panel="sec-as"><div class="card"><div class="card-h"><h3>Auto Scaling</h3></div><div class="card-b">
+<div class="field"><label>분당 최대 요청</label><input class="inp" id="asR" value="60" type="number"></div>
+<div class="field"><label>차단 시간 (분)</label><input class="inp" id="asB" value="30" type="number"></div>
+<div style="display:flex;gap:6px"><button class="btn btn-p" onclick="asSet()">저장</button><button class="btn btn-s" onclick="asGet()">조회</button></div>
+<div class="code" id="asRes" style="margin-top:8px;display:none"></div>
+</div></div></div>
+</div></div>
+</div>
+
+<!-- ======= CLOUDWATCH ======= -->
+<div id="pg-watch" style="display:none" class="page-content">
+<div class="page-inner">
+<div class="ph"><h1>CloudWatch</h1><p>서비스 모니터링</p></div>
+<div class="card"><div class="card-h"><h3>요약</h3><button class="btn btn-p btn-sm" onclick="cwSum()"><i data-lucide="refresh-cw"></i> 새로고침</button><button class="btn btn-s btn-sm" onclick="cwAutoRefresh(true)" style="margin-left:4px">⏱ 자동</button><button class="btn btn-g btn-sm" onclick="cwAutoRefresh(false)">⏹</button></div><div class="card-b" id="cwSumEl"><div class="empty">새로고침을 클릭하세요</div></div></div>
+<div class="card"><div class="card-h"><h3>상세 메트릭</h3></div><div class="card-b">
+<div class="field-row">
+<div class="field"><label>서비스</label>
+<div class="dd" id="dd-cw">
+  <div class="dd-trigger" onclick="ddToggle('dd-cw')">
+    <span class="dd-val" id="dd-cw-val">전체</span>
+    <svg class="dd-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+  <div class="dd-menu" id="dd-cw-menu">
+    <div class="dd-opt sel" onclick="ddSelect('dd-cw','',this)">전체</div>
+    <div class="dd-opt" onclick="ddSelect('dd-cw','s3',this)">s3</div>
+    <div class="dd-opt" onclick="ddSelect('dd-cw','ec2',this)">ec2</div>
+    <div class="dd-opt" onclick="ddSelect('dd-cw','lambda',this)">lambda</div>
+    <div class="dd-opt" onclick="ddSelect('dd-cw','ebs',this)">ebs</div>
+    <div class="dd-opt" onclick="ddSelect('dd-cw','cloudfront',this)">cloudfront</div>
+  </div>
+</div>
+<input type="hidden" id="cwSvc" value="">
+</div>
+<div class="field"><label>시간</label><input class="inp" id="cwH" value="24" type="number" style="width:80px"></div>
+<button class="btn btn-p" onclick="cwMet()">조회</button></div>
+<div class="code" id="cwMetRes" style="margin-top:10px;display:none"></div>
+</div></div>
+</div>
+</div>
+
+<!-- ======= API KEYS ======= -->
+<div id="pg-keys" style="display:none" class="page-content">
+<div class="page-inner">
+<div class="ph"><h1>API Keys</h1><p>키 발급 및 관리</p></div>
+<div class="banner"><i data-lucide="info" style="width:14px;height:14px;color:var(--green);flex-shrink:0;margin-top:1px"></i>
+<div>모든 API 요청에 <code style="background:var(--surface);padding:1px 5px;border-radius:3px;font-family:var(--mono);font-size:10px">X-API-Key</code> 헤더 필요</div></div>
+
+<!-- === PROJECT KEYS (anon + secret) === -->
+<div class="card"><div class="card-h"><h3>프로젝트 키</h3><button class="btn btn-s btn-sm" onclick="specialKeys()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b">
+<div style="font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:14px">
+  Supabase 스타일 프로젝트 키. <b>anon</b>은 프론트/클라이언트에 노출해도 되지만 <b>RLS가 적용</b>됨. <b>secret</b>은 서버에서만 쓰고 <b>RLS를 우회</b>함.
+</div>
+
+<div style="border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:12px;background:var(--surface)">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="tag tag-b" style="font-size:11px">anon</span>
+    <span style="font-weight:600">공개 키 · RLS 적용</span>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button class="btn btn-s btn-sm" onclick="copyText($('anonKey').textContent,'anon key 복사됨')"><i data-lucide="copy"></i></button>
+      <button class="btn btn-d btn-sm" onclick="rotateKey('anon')"><i data-lucide="refresh-cw"></i> 재발급</button>
+    </div>
+  </div>
+  <div class="apikey" style="font-size:12px" id="anonKey">-</div>
+  <div class="hint" style="margin-top:6px;color:var(--text3)">클라이언트 JS, 모바일 앱, 브라우저에서 사용. RLS 정책으로 접근 제한됨.</div>
+</div>
+
+<div style="border:1px solid var(--red);border-radius:8px;padding:14px;background:rgba(240,80,80,.06)">
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+    <span class="tag tag-r" style="font-size:11px">secret</span>
+    <span style="font-weight:600;color:var(--red)">비밀 키 · RLS 우회</span>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button class="btn btn-s btn-sm" onclick="toggleSecret()"><i data-lucide="eye" id="secEye"></i></button>
+      <button class="btn btn-s btn-sm" onclick="copyText(_secKey,'secret key 복사됨')"><i data-lucide="copy"></i></button>
+      <button class="btn btn-d btn-sm" onclick="rotateKey('secret')"><i data-lucide="refresh-cw"></i> 재발급</button>
+    </div>
+  </div>
+  <div class="apikey" style="font-size:12px" id="secretKey">••••••••••••••••••••••••••••</div>
+  <div class="hint" style="margin-top:6px;color:var(--red)">⚠ 서버 사이드에서만 사용. 절대 프론트/git에 노출 금지. 노출되면 즉시 재발급.</div>
+</div>
+</div></div>
+
+<!-- === LEGACY / USER-CREATED KEYS === -->
+<div class="card"><div class="card-h"><h3>현재 세션 키</h3><button class="btn btn-s btn-sm" onclick="copyKey()"><i data-lucide="copy"></i> 복사</button></div>
+<div class="card-b"><div class="apikey"><span id="curKey">-</span></div><div class="hint" style="margin-top:4px">로그인한 계정의 기본 키</div></div></div>
+
+<div class="card"><div class="card-h"><h3>추가 키 발급</h3></div><div class="card-b">
+<div class="field-row"><div class="field"><label>키 이름</label><input class="inp" id="newKeyN" placeholder="my-app-key"></div><button class="btn btn-p" onclick="newKey()"><i data-lucide="plus"></i> 발급</button></div>
+<div class="hint" style="margin-top:6px">추가로 발급하는 키는 <b>user 키</b>로, RLS가 적용됨.</div>
+</div></div>
+
+<div class="card"><div class="card-h"><h3>키 목록</h3><button class="btn btn-s btn-sm" onclick="keyList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b" id="keyListEl"></div></div>
+
+<div class="card"><div class="card-h"><h3>사용 예시</h3></div><div class="card-b">
+<div class="code" id="keyEx">curl -H "X-API-Key: YOUR_KEY" http://localhost:5000/api/cloudwatch/summary</div>
+</div></div>
+</div>
+</div>
+
+<!-- ======= API DOCS ======= -->
+<div id="pg-docs" style="display:none" class="page-content">
+<div class="page-inner">
+<div class="ph"><h1>API Reference</h1><p>모든 엔드포인트</p></div>
+<div id="docsContent"></div>
+</div>
+</div>
+
+<!-- ======= USER MANAGEMENT ======= -->
+<div id="pg-users" style="display:none" class="page-content">
+<div class="page-inner">
+<div class="ph"><h1>유저 관리</h1><p>전체 사용자 목록 및 리소스 현황</p></div>
+<div class="card"><div class="card-h"><h3>전체 유저</h3><button class="btn btn-s btn-sm" onclick="loadUsers()"><i data-lucide="refresh-cw"></i> 새로고침</button></div>
+<div class="card-b" id="userListEl"><div class="empty">새로고침을 클릭하세요</div></div></div>
+<div class="card"><div class="card-h"><h3>유저 상세</h3></div>
+<div class="card-b">
+<div class="field-row"><div class="field"><label>유저 ID</label><input class="inp" id="userDetailId" placeholder="user_id 입력"></div>
+<button class="btn btn-p" onclick="loadUserDetail()">조회</button></div>
+<div class="code" id="userDetailRes" style="margin-top:10px;display:none"></div>
+</div></div>
+</div>
+</div>
+
+<!-- ======= SETTINGS ======= -->
+<div id="pg-settings" style="display:none" class="page-content">
+<div class="page-inner">
+<div class="ph"><h1>설정</h1><p>계정 및 서버</p></div>
+<div class="card"><div class="card-h"><h3>계정</h3></div><div class="card-b">
+<div class="field"><label>사용자명</label><input class="inp" id="setUser" readonly></div>
+<div class="field"><label>서버</label><input class="inp" id="setSrv" readonly></div>
+</div></div>
+<div class="card"><div class="card-h"><h3>🔒 비밀번호 변경</h3></div><div class="card-b">
+<div class="field"><label>현재 비밀번호</label><input class="inp" id="pwCur" type="password" placeholder="현재 비밀번호"></div>
+<div class="field"><label>새 비밀번호</label><input class="inp" id="pwNew" type="password" placeholder="새 비밀번호 (4자 이상)"></div>
+<div class="field"><label>새 비밀번호 확인</label><input class="inp" id="pwNew2" type="password" placeholder="다시 입력"></div>
+<button class="btn btn-p" onclick="changePw()"><i data-lucide="key"></i> 변경</button>
+</div></div>
+<div class="card"><div class="card-h"><h3>연결 테스트</h3></div><div class="card-b">
+<button class="btn btn-p" onclick="testConn()">테스트</button>
+<div class="code" id="connRes" style="margin-top:8px;display:none"></div>
+</div></div>
+</div>
+</div>
+
+</div><!-- /page-area -->
+</div><!-- /body-row -->
+</div><!-- /app -->
+
+<script>
+// ===== INLINE SVG ICON SYSTEM (no CDN) =====
+const ICONS={
+'cloud-lightning':'<path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/>',
+'layout-dashboard':'<rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/>',
+'monitor':'<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
+'zap':'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+'database':'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/>',
+'terminal-square':'<path d="m7 11 2-2-2-2"/><path d="M11 13h4"/><rect width="18" height="18" x="3" y="3" rx="2"/>',
+'terminal':'<polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/>',
+'hard-drive':'<line x1="22" x2="2" y1="12" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" x2="6.01" y1="16" y2="16"/><line x1="10" x2="10.01" y1="16" y2="16"/>',
+'rocket':'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+'shield':'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>',
+'bar-chart-3':'<path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>',
+'key':'<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/>',
+'file-text':'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/>',
+'settings':'<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/>',
+'chevron-down':'<polyline points="6 9 12 15 18 9"/>',
+'box':'<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>',
+'plus':'<line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>',
+'refresh-cw':'<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/>',
+'play':'<polygon points="5 3 19 12 5 21 5 3"/>',
+'list':'<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>',
+'save':'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>',
+'search':'<circle cx="11" cy="11" r="8"/><line x1="21" x2="16.65" y1="21" y2="16.65"/>',
+'trash-2':'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>',
+'upload':'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>',
+'upload-cloud':'<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/>',
+'copy':'<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+'log-out':'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+'info':'<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+'file':'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/>',
+'file-search':'<path d="M4 22h14a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v3"/><path d="M14 2v6h6"/><circle cx="6" cy="14" r="3"/><path d="m9 17-1.5-1.5"/>',
+'cloud':'<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+'clock':'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+'folder':'<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>',
+'globe':'<circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+'server':'<rect width="20" height="8" x="2" y="2" rx="2"/><rect width="20" height="8" x="2" y="14" rx="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/>',
+'link':'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+'activity':'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+'trending-up':'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+'folder-open':'<path d="M6 14l1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/>',
+'history':'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
+'database-zap':'<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 15 21.84"/><path d="M21 5V8"/><path d="M21 12L18 17H22L19 22"/><path d="M3 12A9 3 0 0 0 14.59 14.87"/>',
+'table-2':'<path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>',
+'shield-check':'<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/>',
+'x':'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+'eye':'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+'eye-off':'<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><path d="m2 2 20 20"/>',
+'rotate-ccw':'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+'arrow-left':'<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+'plus-circle':'<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/>',
+'rocket':'<path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>',
+'log-out':'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+'activity':'<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.5.5 0 0 1-.96 0L9.24 2.18a.5.5 0 0 0-.96 0L5.93 10.54A2 2 0 0 1 4 12H2"/>',
+'box':'<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/>',
+'pencil':'<path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+};
+function icon(name,w=17,h=17){return`<svg viewBox="0 0 24 24" width="${w}" height="${h}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`}
+function renderIcons(){document.querySelectorAll('[data-lucide]').forEach(el=>{const n=el.getAttribute('data-lucide');const w=el.style.width?parseInt(el.style.width):17;const h=el.style.height?parseInt(el.style.height):17;if(ICONS[n])el.outerHTML=icon(n,w,h);});}
+window.addEventListener('DOMContentLoaded',()=>renderIcons());
+
+let B='',K='',U='';
+const $=id=>document.getElementById(id);
+const V=id=>$(id)?.value?.trim()||'';
+// XSS 방지: 유저 데이터 innerHTML 삽입 전 반드시 esc()로 감쌀 것
+const esc=s=>s==null?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+
+// ===== CUSTOM DROPDOWN =====
+function ddToggle(id){
+  const dd=$(id)||document.querySelector(`[data-dd="${id}"]`);
+  if(!dd)return;
+  const trigger=dd.querySelector('.dd-trigger');
+  const menu=dd.querySelector('.dd-menu');
+  const isOpen=trigger.classList.contains('open');
+  // 모든 드롭다운 닫기
+  document.querySelectorAll('.dd-trigger.open').forEach(t=>{t.classList.remove('open');t.nextElementSibling.classList.remove('open');});
+  if(!isOpen){trigger.classList.add('open');menu.classList.add('open');}
+}
+function ddSelect(id,val,el){
+  const dd=$(id);
+  // 값 업데이트
+  const hidden=document.getElementById(id.replace('dd-','')+'T')||document.getElementById(id.replace('dd-','')+'Svc');
+  if(hidden)hidden.value=val;
+  // 표시 텍스트
+  $(id+'-val').textContent=el.textContent.replace('✓','').trim();
+  // 선택 표시
+  dd.querySelectorAll('.dd-opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  // 닫기
+  dd.querySelector('.dd-trigger').classList.remove('open');
+  dd.querySelector('.dd-menu').classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd')){
+    document.querySelectorAll('.dd-trigger.open').forEach(t=>{
+      t.classList.remove('open');
+      t.nextElementSibling.classList.remove('open');
+    });
+  }
+});
+
+// ===== TOAST =====
+function toast(m,ok=true){const d=document.createElement('div');d.className='toast '+(ok?'ok':'err');d.textContent=m;$('toasts').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='.3s';setTimeout(()=>d.remove(),300)},3000)}
+
+// ===== API =====
+async function api(method,path,body,auth=true){
+  try{
+    const o={method,headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'true'}};
+    if(auth&&K)o.headers['X-API-Key']=K;
+    if(body&&method!=='GET')o.body=JSON.stringify(body);
+    const r=await fetch(B+path,o);return await r.json();
+  }catch(e){return{error:e.message}}
+}
+async function upload(path,fd){
+  try{const o={method:'POST',headers:{'X-API-Key':K,'ngrok-skip-browser-warning':'true'},body:fd};const r=await fetch(B+path,o);return await r.json();}catch(e){return{error:e.message}}
+}
+function show(id,d,ok=true){const e=$(id);if(!e)return;e.style.display='block';e.textContent=typeof d==='string'?d:JSON.stringify(d,null,2);e.style.borderLeft=ok?'2px solid var(--green)':'2px solid var(--red)'}
+function fmtB(b){return b>1048576?(b/1048576).toFixed(1)+' MB':b>1024?(b/1024).toFixed(1)+' KB':b+' B'}
+
+// ===== AUTH =====
+// ===== 로그인 화면 =====
+let _loginMode = 'login'; // 'login' | 'register'
+let _srvCheckTimer = null;
+
+function switchLoginTab(mode) {
+  _loginMode = mode;
+  $('tabLogin').classList.toggle('active', mode === 'login');
+  $('tabRegister').classList.toggle('active', mode === 'register');
+  $('loginBtnTxt').textContent = mode === 'login' ? '로그인' : '회원가입';
+  loginErrHide(); loginOkHide();
+}
+
+function loginErr(msg) {
+  const el = $('loginErr'); $('loginErrTxt').textContent = msg;
+  el.classList.add('show'); $('loginOk').classList.remove('show');
+}
+function loginErrHide() { $('loginErr').classList.remove('show'); }
+function loginOk(msg) {
+  const el = $('loginOk'); $('loginOkTxt').textContent = msg;
+  el.classList.add('show'); $('loginErr').classList.remove('show');
+}
+function loginOkHide() { $('loginOk').classList.remove('show'); }
+
+function setLoginLoading(on) {
+  const btn = $('loginActionBtn');
+  btn.disabled = on;
+  $('loginBtnTxt').textContent = on ? '연결 중...' : (_loginMode === 'login' ? '로그인' : '회원가입');
+}
+
+async function loginAction() {
+  const u = V('iUser'), p = V('iPass'), s = V('iSrv').replace(/\/$/, '');
+  if (!u || !p) return loginErr('사용자명과 비밀번호를 입력해주세요');
+  if (!s) return loginErr('서버 URL을 입력해주세요');
+  B = s;
+  setLoginLoading(true); loginErrHide(); loginOkHide();
+  const endpoint = _loginMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+  try {
+    const r = await fetch(B + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' },
+      body: JSON.stringify({ username: u, password: p }),
+      signal: AbortSignal.timeout(15000)
+    }).then(r => r.json()).catch(e => ({ error: e.message }));
+    setLoginLoading(false);
+    if (r.error) { loginErr(r.error); return; }
+    if (!r.api_key) { loginErr('서버 응답 오류 (api_key 없음)'); return; }
+    if (_loginMode === 'register') loginOk('가입 완료! 로그인 중...');
+    K = r.api_key; U = u;
+    setTimeout(onAuth, _loginMode === 'register' ? 600 : 0);
+  } catch(e) {
+    setLoginLoading(false);
+    loginErr('서버 연결 실패: ' + e.message);
+  }
+}
+
+// 이전 호환성
+function doLogin() { _loginMode = 'login'; loginAction(); }
+function doRegister() { _loginMode = 'register'; loginAction(); }
+
+// 서버 URL 입력 시 실시간 상태 체크
+function onSrvInput() {
+  if (_srvCheckTimer) clearTimeout(_srvCheckTimer);
+  setSrvStatus('checking', '확인 중...');
+  _srvCheckTimer = setTimeout(checkSrvStatus, 700);
+}
+
+function setSrvStatus(state, msg) {
+  const dot = $('srvDot'), txt = $('srvMsg');
+  dot.className = 'srv-dot ' + state;
+  txt.textContent = msg;
+  txt.style.color = state === 'ok' ? '#16a34a' : state === 'fail' ? '#dc2626' : 'var(--text3)';
+}
+
+async function checkSrvStatus() {
+  const s = V('iSrv').replace(/\/$/, '');
+  if (!s) return setSrvStatus('fail', 'URL을 입력하세요');
+  setSrvStatus('checking', '연결 확인 중...');
+  try {
+    const r = await fetch(s + '/api/cloudwatch/summary', {
+      headers: { 'ngrok-skip-browser-warning': 'true' },
+      signal: AbortSignal.timeout(10000)
+    });
+    if (r.status === 401 || r.ok) {
+      setSrvStatus('ok', '서버 온라인 ✓');
+    } else {
+      setSrvStatus('fail', `서버 응답 오류 (${r.status})`);
+    }
+  } catch(e) {
+    const msg = e.name === 'TimeoutError' ? '응답 없음 (타임아웃)' :
+                e.message.includes('fetch') ? '서버에 연결할 수 없음' : e.message;
+    setSrvStatus('fail', '😴 서버 슬립 중 또는 오프라인');
+  }
+}
+
+// (서버 상태 초기 체크는 메인 DOMContentLoaded에서 처리)
+// ============ 화면 전환 ============
+// 4개 화면: landing, login, projects, app
+function showScreen(name){
+  ['lndScr','loginScr','prjScr','app'].forEach(id=>$(id)?.classList.remove('show'));
+  const map={landing:'lndScr',login:'loginScr',projects:'prjScr',app:'app'};
+  const el=$(map[name]);if(el)el.classList.add('show');
+  if(name==='projects')prjLoad();
+}
+
+function onAuth(){
+  $('avatar').textContent=U[0]?.toUpperCase()||'U';
+  $('curKey').textContent=K;
+  $('setUser').value=U;$('setSrv').value=B;
+  $('prjUser').textContent=U;
+  $('keyEx').textContent=`curl -H "X-API-Key: ${K}" ${B}/api/cloudwatch/summary\n\n# Python\nfrom aoaocloud_client import AOAOCloud\ncloud = AOAOCloud("${B}", "${K}")\nprint(cloud.cloudwatch.summary())`;
+  localStorage.setItem('ak',K);localStorage.setItem('au',U);localStorage.setItem('ab',B);
+  renderIcons();startAliveCheck();
+  showScreen('projects');  // 로그인 후엔 프로젝트 목록으로
+}
+function logout(){localStorage.clear();K='';U='';location.reload();}
+
+// ============ 프로젝트 목록 ============
+async function prjLoad(){
+  const el=$('prjGrid');el.innerHTML='<div class="empty">로딩 중...</div>';
+  const r=await api('GET','/api/projects');
+  if(r.error){el.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">${esc(r.error)}</div>`;return;}
+  const cards=r.projects.map(p=>{
+    const initial=(p.name||'?')[0].toUpperCase();
+    const created=(p.created_at||'').split(' ')[0];
+    return `<div class="prj-card" onclick="prjEnter(${JSON.stringify(p.id)},${JSON.stringify(p.name)})">
+      <button class="prj-card-del" onclick="event.stopPropagation();prjDel(${JSON.stringify(p.id)},${JSON.stringify(p.name)})" title="삭제"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+      <div class="prj-card-icon">${esc(initial)}</div>
+      <h3>${esc(p.name)}</h3>
+      <div class="prj-card-desc">${esc(p.description||'설명 없음')}</div>
+      <div class="prj-card-meta"><span>📍 ${esc(p.region||'서울')}</span><span>${esc(created)}</span></div>
+    </div>`;
+  }).join('');
+  const newCard=`<div class="prj-card prj-card-new" onclick="prjNew()">
+    <i data-lucide="plus-circle" style="width:36px;height:36px;margin-bottom:12px;opacity:.6"></i>
+    <div style="font-weight:600">새 프로젝트</div>
+    <div style="font-size:11px;margin-top:4px">클릭해서 만들기</div>
+  </div>`;
+  el.innerHTML=cards+newCard;renderIcons();
+}
+
+async function prjNew(){
+  const name=await customPrompt('새 프로젝트',{placeholder:'my-awesome-app',msg:'프로젝트 이름을 입력하세요.'});
+  if(!name)return;
+  const r=await api('POST','/api/projects',{name:name.trim()});
+  if(r.error)return toast(r.error,0);
+  toast('생성: '+name);prjLoad();
+}
+
+async function prjDel(id,name){
+  if(!await customConfirm('프로젝트 삭제',`'${name}'을 삭제할까요? 프로젝트 안의 데이터는 그대로 유지되지만, 목록에서 사라집니다.`,{okText:'삭제',danger:true}))return;
+  const r=await api('DELETE','/api/projects/'+encodeURIComponent(id));
+  if(r.error)return toast(r.error,0);
+  toast('삭제됨');prjLoad();
+}
+
+function prjEnter(id,name){
+  CUR_PROJ=id;
+  localStorage.setItem('curp_'+U,id);
+  $('projLabel').textContent=name;
+  showScreen('app');
+  nav('dash',document.querySelector('.sb-btn'));
+  loadDash();startDashAutoRefresh();
+}
+function prjBack(){
+  stopDashAutoRefresh?.();
+  showScreen('projects');
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  renderIcons();
+  const k=localStorage.getItem('ak'),u=localStorage.getItem('au'),b=localStorage.getItem('ab');
+  if(k&&u&&b){K=k;U=u;B=b;
+    $('iSrv').value=b;
+    setSrvStatus('checking','확인 중...');
+    fetch(B+'/api/cloudwatch/summary',{headers:{'X-API-Key':K,'ngrok-skip-browser-warning':'true'},signal:AbortSignal.timeout(10000)}).then(r=>{
+      if(r.ok||r.status===200){onAuth();}else{
+        localStorage.clear();
+        showScreen('landing');
+        setSrvStatus('ok','서버 온라인 ✓');
+      }
+    }).catch(()=>{
+      localStorage.clear();
+      showScreen('landing');
+    });
+  } else {
+    showScreen('landing');
+    setTimeout(checkSrvStatus, 500);
+  }
+});
+function copyKey(){navigator.clipboard?.writeText(K);toast('복사됨!')}
+
+// ===== NAV =====
+function nav(id,el){
+  document.querySelectorAll('#page-area > *').forEach(p=>{
+    p.style.display='none';
+    p.classList.remove('show-page');
+  });
+  const pg=$('pg-'+id);
+  if(pg){
+    if(pg.classList.contains('pg-with-sb')){
+      pg.classList.add('show-page');
+    } else {
+      pg.style.display='block';
+    }
+  }
+  document.querySelectorAll('.sb-btn').forEach(b=>b.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(id==='dash')loadDash();
+  if(id==='keys'){specialKeys();keyList();}
+  renderIcons();
+}
+function sp(panel,el){
+  const page=el.closest('.pg-with-sb')||el.closest('[id^=pg-]');
+  if(page)page.querySelectorAll('[data-panel]').forEach(p=>p.classList.remove('show'));
+  const p=document.querySelector(`[data-panel="${panel}"]`);if(p)p.classList.add('show');
+  const sb=el.parentElement;sb.querySelectorAll('.is-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ===== PROJECTS =====
+let PROJS=[{id:'default',name:'Default'}],CUR_PROJ='default';
+async function loadProjs(){
+  const r=await api('GET','/api/projects');
+  PROJS = r.projects||[];
+  if(!PROJS.length)PROJS=[{id:'default',name:'Default'}];
+  CUR_PROJ=localStorage.getItem('curp_'+U)||PROJS[0].id;
+  renderProjs();
+}
+function saveProjs(){localStorage.setItem('curp_'+U,CUR_PROJ);}
+function renderProjs(){
+  const cur=PROJS.find(p=>p.id===CUR_PROJ);
+  $('projLabel').textContent=cur?.name||'Default';
+  $('projList').innerHTML=PROJS.map(p=>`<div class="proj-dd-item ${p.id===CUR_PROJ?'active':''}" onclick="switchProj(${JSON.stringify(p.id)})">${esc(p.name)}${p.id===CUR_PROJ?' ✓':''}</div>`).join('');
+}
+function switchProj(id){
+  const p=PROJS.find(x=>x.id===id);if(!p)return;
+  CUR_PROJ=id;saveProjs();renderProjs();
+  $('projDD').classList.remove('open');
+  toast('프로젝트: '+p.name);
+}
+async function newProject(){
+  $('projDD').classList.remove('open');
+  const n=await customPrompt('새 프로젝트',{placeholder:'my-project',msg:'프로젝트 이름을 입력하세요.'});
+  if(!n)return;
+  const r=await api('POST','/api/projects',{name:n.trim()});
+  if(r.error)return toast(r.error,0);
+  await loadProjs();
+  CUR_PROJ=r.id;saveProjs();renderProjs();
+  toast('프로젝트 생성: '+n);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#projBtn'))$('projDD')?.classList.remove('open');});
+
+// ===== DASHBOARD =====
+const SVCS=[
+  {id:'ec2',name:'EC2',desc:'가상 머신',icon:'monitor',color:'var(--orange)'},
+  {id:'lambda',name:'Lambda',desc:'서버리스',icon:'zap',color:'var(--purple)'},
+  {id:'s3',name:'S3',desc:'스토리지',icon:'database',color:'var(--cyan)'},
+  {id:'database',name:'데이터베이스',desc:'SQL + 테이블 + RLS',icon:'database-zap',color:'var(--green)'},
+  {id:'storage',name:'스토리지',desc:'EBS, CF 등',icon:'hard-drive',color:'var(--red)'},
+  {id:'deploy',name:'배포',desc:'Lightsail, EB',icon:'rocket',color:'var(--yellow)'},
+  {id:'security',name:'보안',desc:'VPC, Auto',icon:'shield',color:'var(--orange)'},
+  {id:'watch',name:'CloudWatch',desc:'모니터링',icon:'bar-chart-3',color:'var(--cyan)'},
+  {id:'keys',name:'API Keys',desc:'키 관리',icon:'key',color:'var(--green)'},
+  {id:'docs',name:'API 문서',desc:'레퍼런스',icon:'file-text',color:'var(--purple)'},
+];
+function renderSvcGrid(){$('svcGrid').innerHTML=SVCS.map(s=>`<div class="svc-card" onclick="nav('${s.id}')"><div class="svc-icon" style="background:${s.color}15;color:${s.color};border-color:${s.color}30"><i data-lucide="${s.icon}"></i></div><div class="svc-name">${s.name}</div><div class="svc-desc">${s.desc}</div></div>`).join('');renderIcons();}
+async function loadDash(){
+  renderSvcGrid();loadProjs();loadActivity();
+  const r=await api('GET','/api/cloudwatch/summary');
+  if(!r.error){const s=r.storage||{},v=r.services||{};$('st-sto').textContent=fmtB(s.total_bytes||0);$('st-ec2').textContent=v.ec2_running||0;$('st-lam').textContent=v.lambda_functions||0;$('st-site').textContent=v.lightsail_sites||0;}
+  const d=await api('GET','/api/cloudwatch/dashboard?hours=24');
+  if(!d.error){$('st-req').textContent=d.total_requests||0;$('st-avg').textContent=(d.avg_response_ms||0)+'ms';$('st-err').textContent=d.error_count||0;$('st-rate').textContent=(d.error_rate||0)+'%';
+  const svcs=d.by_service||[];const mx=Math.max(...svcs.map(s=>s.count),1);
+  const colors={S3:'var(--cyan)',EC2:'var(--orange)',Lambda:'var(--purple)',Auth:'var(--green)',CloudWatch:'var(--blue)',Other:'var(--dim)'};
+  $('svcBars').innerHTML=svcs.length?'<div class="bar-wrap">'+svcs.map(s=>{const p=Math.round(s.count/mx*100);return`<div class="bar-row"><div class="bar-label">${s.service}</div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${colors[s.service]||'var(--dim)'}"></div></div><div class="bar-val">${s.count}</div></div>`}).join('')+'</div>':'<div class="empty">아직 요청 없음</div>';
+  const ok=d.total_requests-(d.error_count||0),er=d.error_count||0;
+  $('statusSummary').innerHTML=`<div style="display:flex;gap:20px;align-items:center"><div style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--green)">${ok}</div><div style="font-size:10px;color:var(--text3)">성공</div></div><div style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--red)">${er}</div><div style="font-size:10px;color:var(--text3)">에러</div></div><div style="text-align:center"><div style="font-size:20px;font-weight:700;color:var(--yellow)">${d.avg_response_ms||0}ms</div><div style="font-size:10px;color:var(--text3)">평균 응답</div></div></div>`;}
+}
+
+// ===== EC2 =====
+async function ec2Create(){const r=await api('POST','/api/ec2/instances',{name:V('ec2Name')||'inst'});if(r.error)return toast(r.error,0);toast('생성: '+r.instance_id);$('ec2Name').value='';ec2List();}
+async function ec2List(){const r=await api('GET','/api/ec2/instances');$('ec2ListEl').innerHTML=r.instances?.length?`<table class="tbl"><tr><th>이름</th><th>ID</th><th>상태</th><th></th></tr>${r.instances.map(i=>`<tr><td>${i.name}</td><td class="mono">${i.id}</td><td><span class="tag tag-${i.status==='running'?'g':'r'}">${i.status}</span></td><td>${i.status==='running'?`<button class="btn btn-p btn-sm" onclick="ec2Connect('${i.id}')">연결</button>`:''}</td></tr>`).join('')}</table>`:'<div class="empty">없음</div>';}
+function ec2Connect(id){$('ec2TermId').value=id;sp('ec2-term',document.querySelectorAll('.pg-with-sb')[0].querySelectorAll('.is-item')[1]);$('termBody').innerHTML='$ '+id+' 에 연결됨\n';$('termCmd').focus();toast('터미널 연결: '+id);}
+let _ec2CmdHistory=[], _ec2HistIdx=-1;
+
+function ec2TermKeydown(e) {
+  if (e.key==='Enter'){ec2Exec();return;}
+  if (e.key==='ArrowUp'){e.preventDefault();if(!_ec2CmdHistory.length)return;_ec2HistIdx=Math.min(_ec2HistIdx+1,_ec2CmdHistory.length-1);$('termCmd').value=_ec2CmdHistory[_ec2HistIdx]||'';}
+  if (e.key==='ArrowDown'){e.preventDefault();_ec2HistIdx=Math.max(_ec2HistIdx-1,-1);$('termCmd').value=_ec2HistIdx>=0?(_ec2CmdHistory[_ec2HistIdx]||''):'';}
+}
+
+function ec2TermTabSwitch(tabId,el){
+  ['tab-ec2-term','tab-ec2-files','tab-ec2-hist'].forEach(id=>{const t=$(id);if(t)t.style.display='none';});
+  const target=$(tabId);if(target)target.style.display='block';
+  document.querySelectorAll('[data-ec2tab]').forEach(t=>t.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(tabId==='tab-ec2-files')ec2FilesList();
+  if(tabId==='tab-ec2-hist')ec2HistLoad();
+  renderIcons();
+}
+
+async function ec2Exec(){
+  const cmd=V('termCmd'),id=V('ec2TermId');
+  if(!cmd||!id)return;
+  if(_ec2CmdHistory[0]!==cmd)_ec2CmdHistory.unshift(cmd);
+  if(_ec2CmdHistory.length>100)_ec2CmdHistory.pop();
+  _ec2HistIdx=-1;
+  const b=$('termBody');
+  b.innerHTML+=`\n<span style="color:var(--green)">$ ${cmd}</span>\n`;
+  $('termCmd').value='';
+  await _ec2Run(id,cmd,b,false);
+}
+
+async function ec2FilesList(){
+  const id=V('ec2TermId');if(!id)return;
+  const r=await api('GET',`/api/ec2/files?instance_id=${id}`);
+  const el=$('ec2FilesEl');
+  if(r.error){el.innerHTML=`<div class="empty">${r.error}</div>`;return;}
+  if(!r.files?.length){el.innerHTML='<div class="empty">파일 없음</div>';return;}
+  el.innerHTML=`<div style="font-size:11px;color:var(--text3);margin-bottom:8px">${r.work_dir||''}</div>
+    <table class="tbl"><tr><th>이름</th><th>크기</th><th></th></tr>
+    ${r.files.map(f=>`<tr><td>${f.is_dir?'📁':'📄'} ${f.name}</td><td>${f.is_dir?'-':fmtB(f.size)}</td>
+    <td>${!f.is_dir?`<a href="${B}/api/ec2/download?instance_id=${id}&filename=${encodeURIComponent(f.name)}&api_key=${K}" class="btn btn-s btn-sm" download>⬇</a>`:''}</td></tr>`).join('')}</table>`;
+}
+
+async function ec2FileUpload(){
+  const id=V('ec2TermId');const file=$('ec2UpFile').files[0];
+  if(!id||!file)return toast('인스턴스 ID를 먼저 입력하세요',0);
+  const fd=new FormData();fd.append('instance_id',id);fd.append('file',file);
+  const r=await upload('/api/ec2/upload',fd);
+  if(r.error)return toast(r.error,0);
+  toast('업로드 완료: '+r.filename);ec2FilesList();
+}
+
+async function ec2HistLoad(){
+  const id=V('ec2TermId');
+  const r=await api('GET',id?`/api/ec2/history?instance_id=${id}`:'/api/ec2/history');
+  const el=$('ec2HistEl');
+  if(r.error){el.innerHTML=`<div class="empty">${r.error}</div>`;return;}
+  if(!r.history?.length){el.innerHTML='<div class="empty">히스토리 없음</div>';return;}
+  el.innerHTML=`<table class="tbl"><tr><th>시간</th><th>명령어</th><th>상태</th></tr>
+    ${r.history.map(h=>`<tr><td style="color:var(--text3);white-space:nowrap">${(h.executed_at||'').substring(0,19)}</td>
+    <td class="mono">${h.command||''}</td>
+    <td>${h.is_blocked?'<span class="tag tag-r">차단</span>':'<span class="tag tag-g">OK</span>'}</td></tr>`).join('')}</table>`;
+}
+
+async function lsDel(id){if(!await customConfirm('삭제 확인','정말 삭제할까요?',{okText:'삭제',danger:true}))return;const r=await api('DELETE','/api/lightsail/sites/'+id);if(r.error)return toast(r.error,0);toast('삭제 완료');lsList();}
+
+async function lsEdit(id){
+  const r=await api('GET','/api/lightsail/sites/'+id+'/html');if(r.error)return toast(r.error,0);
+  $('lsH').value=r.html||'';toast('HTML 로드됨 - 수정 후 배포 버튼 클릭');
+}
+
+async function ebsDataList(){
+  const vol=V('ebsV');const r=await api('GET',vol?'/api/ebs/list?volume='+vol:'/api/ebs/list');
+  const el=$('ebsRes');el.style.display='block';
+  if(r.error){el.textContent=r.error;el.style.borderLeft='2px solid var(--red)';return;}
+  if(!r.data?.length){el.textContent='데이터 없음';return;}
+  el.style.borderLeft='2px solid var(--green)';
+  el.innerHTML=`<table class="tbl"><tr><th>키</th><th>원본</th><th>압축</th></tr>
+    ${r.data.map(d=>`<tr><td class="mono">${d.key}</td><td>${fmtB(d.original_size)}</td><td>${fmtB(d.compressed_size)}</td></tr>`).join('')}</table>`;
+}
+
+async function changePw(){
+  const cur=V('pwCur'),nw=V('pwNew'),nw2=V('pwNew2');
+  if(!cur||!nw)return toast('모두 입력해주세요',0);
+  if(nw!==nw2)return toast('새 비밀번호 불일치',0);
+  const r=await api('POST','/api/auth/change-password',{current_password:cur,new_password:nw});
+  if(r.error)return toast(r.error,0);
+  toast('비밀번호 변경 완료');$('pwCur').value=$('pwNew').value=$('pwNew2').value='';
+}
+
+let _dashRefreshTimer=null;
+function startDashAutoRefresh(){if(_dashRefreshTimer)clearInterval(_dashRefreshTimer);_dashRefreshTimer=setInterval(()=>{const d=$('pg-dash');if(d&&d.style.display!=='none')loadDash();},30000);}
+function stopDashAutoRefresh(){if(_dashRefreshTimer){clearInterval(_dashRefreshTimer);_dashRefreshTimer=null;}}
+async function _ec2Run(id,cmd,b,force){
+  const r=await api('POST','/api/ec2/exec',{instance_id:id,command:cmd,force:force});
+  if(r.error==='blocked'){
+    b.innerHTML+=`<span style="color:var(--red)">🚫 차단됨: ${r.reason}</span>\n`;
+    b.scrollTop=b.scrollHeight;return;
+  }
+  if(r.warning){
+    b.innerHTML+=`<span style="color:var(--yellow)">⚠️ 경고: ${r.reason}</span>\n`;
+    b.scrollTop=b.scrollHeight;
+    const ok=await customConfirm('⚠️ 주의',r.reason+'\n\n자기 작업공간 내 데이터가 변경될 수 있습니다. 계속 실행할까요?',{okText:'계속'});
+    if(ok){
+      b.innerHTML+=`<span style="color:var(--yellow)">→ 사용자 확인 후 실행중...</span>\n`;
+      await _ec2Run(id,cmd,b,true);
+    }else{
+      b.innerHTML+=`<span style="color:var(--text3)">→ 취소됨</span>\n`;
+      b.scrollTop=b.scrollHeight;
+    }
+    return;
+  }
+  b.innerHTML+=r.error
+    ?`<span style="color:var(--red)">❌ ${r.error} ${r.reason||''}</span>\n`
+    :(r.output||'(no output)')+'\n';
+  b.scrollTop=b.scrollHeight;
+}
+
+// ===== LAMBDA =====
+async function lamCreate(){const r=await api('POST','/api/lambda/functions',{name:V('lamName'),code:$('lamCode').value});if(r.error)return toast(r.error,0);toast('생성: '+r.name);lamList();}
+async function lamList(){const r=await api('GET','/api/lambda/functions');$('lamListEl').innerHTML=r.functions?.length?`<table class="tbl"><tr><th>이름</th><th>런타임</th><th></th></tr>${r.functions.map(f=>`<tr><td class="mono">${f.name}</td><td>${f.runtime}</td><td style="display:flex;gap:4px"><button class="btn btn-s btn-sm" onclick="lamEdit('${f.name}')">편집</button><button class="btn btn-p btn-sm" onclick="$('lamRunName').value='${f.name}';sp('lam-run',document.querySelectorAll('#pg-lambda .is-item')[2])">실행</button></td></tr>`).join('')}</table>`:'<div class="empty">없음</div>';}
+async function lamEdit(name){
+  const r=await api('GET','/api/lambda/functions');
+  const fn=(r.functions||[]).find(f=>f.name===name);
+  if(!fn)return toast('함수를 찾을 수 없습니다',0);
+  $('lamName').value=fn.name;
+  $('lamCode').value=fn.code||'';
+  sp('lam-new',document.querySelectorAll('#pg-lambda .is-item')[1]);
+  toast('코드 수정 후 생성 버튼 클릭 (같은 이름이면 덮어쓰기)');
+}
+async function lamInvoke(){let inp={};try{inp=JSON.parse(V('lamRunInput')||'{}');}catch{}const r=await api('POST','/api/lambda/invoke',{function:V('lamRunName'),input:inp});show('lamResult',r,r.status==='success');}
+
+// ===== S3 =====
+async function s3CreateBkt(){const n=V('s3BktName');const r=await api('POST','/api/s3/buckets',{name:n});if(r.error)return toast(r.error,0);toast('버킷 생성');$('s3BktName').value='';s3Bkts();}
+async function s3Bkts(){
+  const [r,rs]=await Promise.all([api('GET','/api/s3/buckets'),api('GET','/api/s3/buckets/stats')]);
+  const smap={};(rs.buckets||[]).forEach(b=>smap[b.id]=b);
+  $('s3BktList').innerHTML=r.buckets?.length?`<table class="tbl"><tr><th>이름</th><th>오브젝트</th><th>용량</th><th>생성일</th></tr>${r.buckets.map(b=>{const s=smap[b.id]||{};return`<tr><td><strong>${b.name}</strong></td><td>${s.object_count||0}</td><td>${fmtB(s.total_size||0)}</td><td>${b.created_at}</td></tr>`}).join('')}</table>`:'<div class="empty">버킷 없음</div>';
+}
+async function s3Put(){let v;try{v=JSON.parse(V('s3ObjVal'));}catch{v=V('s3ObjVal');}const r=await api('PUT','/api/s3/objects',{bucket:V('s3ObjBkt'),key:V('s3ObjKey'),value:v});show('s3Result',r,!r.error);}
+async function s3Get(){const r=await api('GET',`/api/s3/objects?bucket=${V('s3ObjBkt')}&key=${V('s3ObjKey')}`);show('s3Result',r,!r.error);}
+async function s3Del(){const r=await api('DELETE','/api/s3/objects',{bucket:V('s3ObjBkt'),key:V('s3ObjKey')});show('s3Result',r,!r.error);}
+async function s3ObjList(){const bkt=V('s3ObjBkt');const r=await api('GET',`/api/s3/objects/list?bucket=${bkt}`);$('s3ObjListEl').innerHTML=r.objects?.length?`<table class="tbl"><tr><th>키</th><th>크기</th><th>타입</th><th></th></tr>${r.objects.map(o=>`<tr><td class="mono" style="cursor:pointer;color:var(--green)" onclick="s3Preview('${bkt}','${o.key}')">${o.key}</td><td>${fmtB(o.size)}</td><td style="color:var(--text3)">${o.content_type}</td><td><button class="btn btn-s btn-sm" onclick="s3Preview('${bkt}','${o.key}')">보기</button></td></tr>`).join('')}</table>`:'<div class="empty">오브젝트 없음</div>';}
+async function s3Preview(bucket,key){
+  const r=await api('GET',`/api/s3/objects?bucket=${bucket}&key=${key}`);
+  const el=$('s3Result');el.style.display='block';
+  if(r.error){el.textContent=r.error;el.style.borderLeft='2px solid var(--red)';return;}
+  el.style.borderLeft='2px solid var(--green)';
+  try{
+    const val=typeof r.value==='object'?JSON.stringify(r.value,null,2):String(r.value);
+    el.innerHTML='<div style="font-size:10px;color:var(--text3);margin-bottom:6px">📦 '+bucket+'/'+key+' ('+fmtB(r.size)+')</div><pre style="margin:0;white-space:pre-wrap;word-break:break-all">'+val.replace(/</g,'&lt;')+'</pre>';
+  }catch{el.textContent=JSON.stringify(r,null,2);}
+  $('s3ObjBkt').value=bucket;$('s3ObjKey').value=key;
+}
+async function s3Upload(){const f=$('s3UpFile').files[0];if(!f)return toast('파일 선택',0);const fd=new FormData();fd.append('file',f);fd.append('bucket',V('s3UpBkt'));if(V('s3UpKey'))fd.append('key',V('s3UpKey'));const r=await upload('/api/s3/upload',fd);if(r.error)return toast(r.error,0);toast(`업로드 완료: ${r.key} (${fmtB(r.size)})`);}
+
+// ===== CUSTOM MODAL (prompt/confirm 대체) =====
+let _mdlResolve=null,_mdlMode='prompt';
+function customPrompt(title,{placeholder='',msg='',defaultVal='',okText='확인'}={}){
+  return new Promise(res=>{
+    _mdlResolve=res;_mdlMode='prompt';
+    $('mdlTitle').textContent=title;
+    const m=$('mdlMsg');if(msg){m.style.display='block';m.textContent=msg;}else m.style.display='none';
+    $('mdlBody').style.display='block';
+    const inp=$('mdlInput');inp.value=defaultVal;inp.placeholder=placeholder;inp.type='text';
+    $('mdlOKBtn').textContent=okText;
+    $('mdlBack').classList.add('open');setTimeout(()=>inp.focus(),50);
+  });
+}
+function customConfirm(title,msg,{okText='확인',danger=false}={}){
+  return new Promise(res=>{
+    _mdlResolve=res;_mdlMode='confirm';
+    $('mdlTitle').textContent=title;
+    const m=$('mdlMsg');m.style.display='block';m.textContent=msg||'';
+    $('mdlBody').style.display='none';
+    const b=$('mdlOKBtn');b.textContent=okText;b.className='btn '+(danger?'btn-d':'btn-p');
+    $('mdlBack').classList.add('open');setTimeout(()=>b.focus(),50);
+  });
+}
+function mdlOK(){
+  if(_mdlMode==='custom'&&_mdlGetter){_mdlCustomResult=_mdlGetter();}
+  const r=_mdlMode==='prompt'?$('mdlInput').value:_mdlMode==='custom'?(_mdlCustomResult):true;
+  $('mdlBack').classList.remove('open');$('mdlOKBtn').className='btn btn-p';
+  $('mdlSlot').style.display='none';$('mdlSlot').innerHTML='';
+  $('mdlBox').classList.remove('mdl-wide');_mdlGetter=null;
+  if(_mdlResolve){const f=_mdlResolve;_mdlResolve=null;f(r);}
+}
+function mdlCancel(){
+  $('mdlBack').classList.remove('open');$('mdlOKBtn').className='btn btn-p';
+  $('mdlSlot').style.display='none';$('mdlSlot').innerHTML='';
+  $('mdlBox').classList.remove('mdl-wide');
+  if(_mdlResolve){const f=_mdlResolve;_mdlResolve=null;f(_mdlMode==='prompt'?null:_mdlMode==='custom'?null:false);}
+}
+
+// 커스텀 컨텐츠 모달 (region picker 등)
+let _mdlCustomResult=null;
+function customModal(title,{msg='',slotHTML='',okText='확인',wide=false,getValue=null}={}){
+  return new Promise(res=>{
+    _mdlResolve=res;_mdlMode='custom';_mdlCustomResult=null;
+    $('mdlTitle').textContent=title;
+    const m=$('mdlMsg');if(msg){m.style.display='block';m.textContent=msg;}else m.style.display='none';
+    $('mdlBody').style.display='none';
+    const slot=$('mdlSlot');slot.style.display='block';slot.innerHTML=slotHTML;
+    if(wide)$('mdlBox').classList.add('mdl-wide');
+    $('mdlOKBtn').textContent=okText;
+    $('mdlBack').classList.add('open');
+    // getValue: 확인 누를 때 결과 계산
+    if(getValue) _mdlGetter=getValue; else _mdlGetter=null;
+    renderIcons();
+  });
+}
+let _mdlGetter=null;
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('mdlBack').classList.contains('open'))mdlCancel();
+});
+
+// ===== ONBOARDING (Firebase-style) =====
+const ONB_ACTIVE={};  // {service: {location, ...}}
+async function onbStatusAll(){
+  const r=await api('GET','/api/onboarding/status');
+  if(r.activations){for(const a of r.activations)ONB_ACTIVE[a.service]=a;}
+}
+function onbIsActive(service){return !!ONB_ACTIVE[service];}
+function onbApply(service){
+  // 히어로 vs 바디 토글
+  const hero=$('onb-'+service),body=$(`onb-${service}-body`);
+  if(!hero||!body)return;
+  if(onbIsActive(service)){
+    hero.style.display='none';body.style.display='';
+    // 위치 태그 표시
+    const tag=$('dbLocTag');
+    if(service==='database'&&tag){
+      const loc=ONB_ACTIVE[service]?.location||'auto';
+      const locName={
+        'asia-northeast3':'서울','asia-northeast1':'도쿄','asia-southeast1':'싱가포르',
+        'us-central1':'아이오와','europe-west1':'벨기에','auto':'자동 선택'
+      }[loc]||loc;
+      tag.textContent='📍 '+locName;
+    }
+  } else {
+    hero.style.display='';body.style.display='none';
+  }
+  renderIcons();
+}
+async function onbStart(service){
+  if(service==='database'){
+    // DB 리전 목록 가져오기
+    const info=await api('GET','/api/onboarding/db-info');
+    if(info.error)return toast(info.error,0);
+    const locs=info.locations;
+    // 추천을 선택 상태로
+    let sel=locs.find(l=>l.recommended)?.id||locs[0].id;
+    const html=`
+      <div style="font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:8px">
+        가장 가까운 위치를 자동으로 감지했어요. 원하는 위치를 선택하세요.
+        <br><span style="color:var(--text3);font-size:11px">한번 선택하면 이후 변경 시 데이터 마이그레이션이 필요할 수 있음.</span>
+      </div>
+      <div class="rgn-list" id="rgnList">
+        ${locs.map(l=>`
+          <div class="rgn-item ${l.id===sel?'sel':''}" data-loc="${l.id}" onclick="onbPickLoc('${l.id}')">
+            <span class="rgn-flag">${l.flag}</span>
+            <span class="rgn-name">${l.name}${l.recommended?'<span class="rgn-rec">추천</span>':''}</span>
+            <span class="rgn-ping">~${l.ping_ms}ms</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:12px;font-size:11px;color:var(--text3);text-align:center">
+        💡 데이터베이스는 <b>API 키별로 완전 격리</b>됨. 다른 유저 데이터에 접근 불가.
+      </div>
+    `;
+    window._onbPickedLoc=sel;
+    const picked=await customModal('데이터베이스 시작하기',{
+      msg:'',slotHTML:html,okText:'활성화',wide:true,
+      getValue:()=>window._onbPickedLoc
+    });
+    if(!picked)return;
+    const r=await api('POST','/api/onboarding/activate',{service:'database',location:picked});
+    if(r.error)return toast(r.error,0);
+    ONB_ACTIVE.database={service:'database',location:picked};
+    toast('데이터베이스 활성화 완료');onbApply('database');
+    // 첫 로드
+    dbTblLoad?.();
+  }
+}
+function onbPickLoc(id){
+  window._onbPickedLoc=id;
+  document.querySelectorAll('#rgnList .rgn-item').forEach(el=>{
+    el.classList.toggle('sel', el.dataset.loc===id);
+  });
+}
+async function onbReset(service){
+  if(!await customConfirm('온보딩 재설정','활성화를 해제하고 시작 화면을 다시 볼까요? 데이터는 유지됩니다.',{okText:'재설정'}))return;
+  await api('DELETE','/api/onboarding/deactivate/'+service);
+  delete ONB_ACTIVE[service];
+  onbApply(service);
+  toast('재설정됨');
+}
+
+// ===== SQL EDITOR (in Database page) =====
+const SQLEX={
+  create:`CREATE TABLE IF NOT EXISTS products (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  name TEXT,\n  price INTEGER,\n  category TEXT\n);`,
+  full:`CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, price INTEGER, category TEXT);\nINSERT INTO products (name,price,category) VALUES ('아이폰',1500000,'전자기기'),('맥북',2800000,'컴퓨터'),('에어팟',350000,'악세서리');\nSELECT * FROM products;`
+};
+async function sqlRun(){const q=V('sqlTA');if(!q)return;const r=await api('POST','/api/s3/sql',{query:q});const e=$('sqlRes');
+if(r.error){e.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">${esc(r.error)}</div>`;return;}
+if(r.rows?.length){const cols=Object.keys(r.rows[0]);e.innerHTML=`<div style="font-size:10px;color:var(--green);margin-bottom:6px">✓ ${r.rows.length}행 · ${r.duration_ms||0}ms${r.truncated?' · <span style="color:var(--yellow)">잘림</span>':''}</div><table class="tbl"><tr>${cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr>${r.rows.map(row=>`<tr>${cols.map(c=>`<td>${row[c]===null?'<span style="color:var(--dim)">NULL</span>':esc(row[c])}</td>`).join('')}</tr>`).join('')}</table>`;}
+else e.innerHTML=`<div class="code" style="border-left:2px solid var(--green)">✓ ${r.affected||0}행 영향 · ${r.duration_ms||0}ms</div>`;}
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){const pg=$('pg-database');if(pg&&pg.classList.contains('show-page')){e.preventDefault();sqlRun();}}});
+
+// ===== TABLE EDITOR =====
+let _dbCurTbl=null,_dbCurCols=[],_dbCurPk=null;
+async function dbTblLoad(){
+  const el=$('dbTblListEl');el.innerHTML='<div class="empty">로딩 중...</div>';
+  const r=await api('GET','/api/db/tables');
+  if(r.error){el.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">${esc(r.error)}</div>`;return;}
+  if(!r.tables?.length){el.innerHTML='<div class="empty">테이블이 없습니다. SQL 에디터에서 <code>CREATE TABLE</code>을 실행하세요.</div>';return;}
+  el.innerHTML=`<table class="tbl"><tr><th>이름</th><th>행 개수</th><th></th></tr>${r.tables.map(t=>`
+    <tr><td><strong>${esc(t.name)}</strong></td><td class="mono">${t.rows|0}</td>
+    <td style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="dbTblOpen(${JSON.stringify(t.name)})"><i data-lucide="pencil"></i> 편집</button></td></tr>
+  `).join('')}</table>`;renderIcons();
+}
+async function dbTblOpen(name){
+  _dbCurTbl=name;
+  const r=await api('GET','/api/db/table/'+encodeURIComponent(name)+'?limit=200');
+  if(r.error){toast(r.error,0);return;}
+  _dbCurCols=r.columns;
+  _dbCurPk=r.columns.find(c=>c.pk)?.name||r.columns[0].name;
+  $('dbTblEditCard').style.display='';
+  $('dbTblEditTitle').textContent='📋 '+name;
+  $('dbTblCount').textContent=`${r.total}행 · PK: ${_dbCurPk}`;
+  const cols=r.columns.map(c=>c.name);
+  const rows=r.rows;
+  const html=`<table class="tbl"><tr>${cols.map(c=>{
+    const info=r.columns.find(x=>x.name===c);
+    return `<th>${esc(c)}${info.pk?' 🔑':''}<div style="font-size:10px;color:var(--dim);font-weight:400;text-transform:none;margin-top:2px">${esc(info.type||'')}</div></th>`;
+  }).join('')}<th></th></tr>
+  ${rows.map(row=>`<tr>${cols.map(c=>{
+    const v=row[c];
+    const disp=v===null?'<span class="db-null">NULL</span>':esc(v);
+    return `<td class="db-editable" contenteditable="true" data-col="${esc(c)}" data-pk="${esc(row[_dbCurPk])}" data-orig="${v===null?'':esc(v)}" onblur="dbCellEdit(this)">${disp}</td>`;
+  }).join('')}<td><button class="btn btn-d btn-sm" onclick="dbRowDel(${JSON.stringify(String(row[_dbCurPk]))})"><i data-lucide="trash-2"></i></button></td></tr>`).join('')}
+  </table>${rows.length===0?'<div class="empty">빈 테이블</div>':''}`;
+  $('dbTblEditEl').innerHTML=html;renderIcons();
+}
+async function dbCellEdit(td){
+  const col=td.dataset.col,pk=td.dataset.pk,orig=td.dataset.orig;
+  let nv=td.textContent.trim();if(nv==='NULL')nv=null;
+  if(String(nv)===orig)return;
+  const changes={};changes[col]=nv;
+  const r=await api('PUT','/api/db/table/'+encodeURIComponent(_dbCurTbl)+'/row',{pk_col:_dbCurPk,pk_val:pk,changes});
+  if(r.error){toast(r.error,0);dbTblOpen(_dbCurTbl);return;}
+  td.dataset.orig=nv===null?'':nv;
+  toast('저장됨');
+}
+async function dbRowDel(pk){
+  if(!await customConfirm('행 삭제',`PK=${pk} 행을 삭제할까요?`,{okText:'삭제',danger:true}))return;
+  const r=await api('DELETE','/api/db/table/'+encodeURIComponent(_dbCurTbl)+'/row',{pk_col:_dbCurPk,pk_val:pk});
+  if(r.error)return toast(r.error,0);
+  toast('삭제됨');dbTblOpen(_dbCurTbl);
+}
+async function dbRowNew(){
+  if(!_dbCurTbl)return;
+  // 빈 값으로 시작하는 컬럼 목록. AUTOINCREMENT는 생략 유도.
+  const editable=_dbCurCols.filter(c=>!(c.pk&&/INT/i.test(c.type||'')));
+  const inputs=await customPrompt('새 행 추가',{
+    msg:`${_dbCurTbl}에 새 행을 추가합니다. 값을 JSON으로 입력해요.`,
+    placeholder:JSON.stringify(Object.fromEntries(editable.map(c=>[c.name,''])),null,0),
+    defaultVal:JSON.stringify(Object.fromEntries(editable.map(c=>[c.name,''])))
+  });
+  if(inputs===null)return;
+  let obj;try{obj=JSON.parse(inputs);}catch{return toast('JSON 형식이 아님',0);}
+  const r=await api('POST','/api/db/table/'+encodeURIComponent(_dbCurTbl)+'/row',obj);
+  if(r.error)return toast(r.error,0);
+  toast('추가됨');dbTblOpen(_dbCurTbl);
+}
+async function dbTblNew(){
+  const name=await customPrompt('새 테이블',{placeholder:'my_table',msg:'테이블 이름을 입력하면 기본 스키마(id, name)로 생성됩니다.'});
+  if(!name)return;
+  const r=await api('POST','/api/s3/sql',{query:`CREATE TABLE ${name} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)`});
+  if(r.error)return toast(r.error,0);
+  toast('생성: '+name);dbTblLoad();
+}
+async function dbTblDrop(){
+  if(!_dbCurTbl)return;
+  if(!await customConfirm('테이블 삭제',`정말로 '${_dbCurTbl}' 테이블을 삭제할까요? 되돌릴 수 없음.`,{okText:'삭제',danger:true}))return;
+  const r=await api('DELETE','/api/db/table/'+encodeURIComponent(_dbCurTbl));
+  if(r.error)return toast(r.error,0);
+  toast('삭제됨');$('dbTblEditCard').style.display='none';_dbCurTbl=null;dbTblLoad();
+}
+
+// ===== RLS =====
+async function dbRlsLoad(){
+  const el=$('dbRlsListEl');el.innerHTML='<div class="empty">로딩 중...</div>';
+  const r=await api('GET','/api/db/rls');
+  if(r.error){el.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">${esc(r.error)}</div>`;return;}
+  if(!r.policies?.length){el.innerHTML='<div class="empty">아직 정책 없음. 정책이 없으면 기본 허용.</div>';return;}
+  el.innerHTML=`<table class="tbl"><tr><th>테이블</th><th>API 키</th><th>읽기</th><th>쓰기</th><th>생성일</th><th></th></tr>${r.policies.map(p=>`
+    <tr>
+      <td><strong>${esc(p.table_name)}</strong></td>
+      <td class="mono">${p.api_key==='*'?'<span class="tag tag-b">모든 키</span>':esc(p.api_key.substring(0,14))+'...'}</td>
+      <td><span class="tag tag-${p.allow_read?'g':'r'}">${p.allow_read?'허용':'차단'}</span></td>
+      <td><span class="tag tag-${p.allow_write?'g':'r'}">${p.allow_write?'허용':'차단'}</span></td>
+      <td style="color:var(--text3);font-size:11px">${esc(p.created_at||'')}</td>
+      <td><button class="btn btn-d btn-sm" onclick="dbRlsDel(${p.id|0})"><i data-lucide="trash-2"></i></button></td>
+    </tr>
+  `).join('')}</table>`;renderIcons();
+}
+async function dbRlsAdd(){
+  const t=V('rlsTbl');if(!t)return toast('테이블명 입력',0);
+  const key=V('rlsKey')||'*';
+  const rd=document.querySelector('[data-dd="rlsRead"] .dd-val').dataset.val==='1';
+  const wr=document.querySelector('[data-dd="rlsWrite"] .dd-val').dataset.val==='1';
+  const r=await api('POST','/api/db/rls',{table_name:t,api_key:key,allow_read:rd,allow_write:wr});
+  if(r.error)return toast(r.error,0);
+  toast('정책 추가');$('rlsTbl').value='';$('rlsKey').value='';dbRlsLoad();
+}
+async function dbRlsDel(id){
+  if(!await customConfirm('정책 삭제','이 정책을 삭제할까요?',{okText:'삭제',danger:true}))return;
+  await api('DELETE','/api/db/rls/'+id);toast('삭제됨');dbRlsLoad();
+}
+// 커스텀 드롭다운 선택 헬퍼 (rlsRead/rlsWrite용)
+function ddPick(name,val,label){
+  const dd=document.querySelector(`[data-dd="${name}"]`);if(!dd)return;
+  const valEl=dd.querySelector('.dd-val');valEl.dataset.val=val;valEl.textContent=label;
+  dd.querySelectorAll('.dd-opt').forEach(o=>o.classList.remove('sel'));
+  event.target.classList.add('sel');
+  dd.querySelector('.dd-trigger').classList.remove('open');
+  dd.querySelector('.dd-menu').classList.remove('open');
+}
+
+// ===== STORAGE =====
+async function ebsCreate(){const r=await api('POST','/api/ebs/volumes',{name:V('ebsName')});if(r.error)return toast(r.error,0);toast('볼륨 생성');$('ebsName').value='';ebsList();}
+async function ebsList(){const r=await api('GET','/api/ebs/volumes');$('ebsListEl').innerHTML=r.volumes?.length?`<table class="tbl"><tr><th>이름</th><th>ID</th></tr>${r.volumes.map(v=>`<tr><td>${v.name}</td><td class="mono">${v.id}</td></tr>`).join('')}</table>`:'';}
+async function ebsPut(){let v;try{v=JSON.parse(V('ebsVal'));}catch{v=V('ebsVal');}const r=await api('PUT','/api/ebs/data',{volume:V('ebsV'),key:V('ebsK'),value:v});show('ebsRes',r,!r.error);}
+async function ebsGet(){const r=await api('GET',`/api/ebs/data?volume=${V('ebsV')}&key=${V('ebsK')}`);show('ebsRes',r,!r.error);}
+async function cfStore(){const r=await api('POST','/api/cloudfront/store',{key:V('cfK'),content:V('cfV')});show('cfRes',r,!r.error);}
+async function cfGet(){const r=await api('GET',`/api/cloudfront/get?key=${V('cfK')}`);show('cfRes',r,!r.error);}
+async function cfList(){const r=await api('GET','/api/cloudfront/list');show('cfRes',r,!r.error);}
+async function cfnCreate(){let t;try{t=JSON.parse(V('cfnD'));}catch{t=V('cfnD');}const r=await api('POST','/api/cloudformation/stacks',{name:V('cfnN'),template:t,ttl_minutes:parseInt(V('cfnT'))||30});show('cfnRes',r,!r.error);}
+async function cfnList(){const r=await api('GET','/api/cloudformation/stacks');show('cfnRes',r,!r.error);}
+async function wsUpload(){const f=$('wsFile').files[0];if(!f)return toast('파일 선택',0);const fd=new FormData();fd.append('file',f);const r=await upload('/api/workspaces/upload',fd);if(r.error)return toast(r.error,0);toast('업로드 완료');wsList();}
+async function wsList(){const r=await api('GET','/api/workspaces/files');$('wsListEl').innerHTML=r.files?.length?`<table class="tbl"><tr><th>파일명</th><th>크기</th><th>상태</th><th></th></tr>${r.files.map(f=>`<tr><td>📄 ${f.filename}</td><td style="color:var(--text3)">${fmtB(f.size)}</td><td>${f.shared?'<span class="tag tag-g">공유중</span>':'<span class="tag" style="background:var(--surface);color:var(--text3)">비공개</span>'}</td><td style="display:flex;gap:4px">${f.shared?`<button class="btn btn-s btn-sm" onclick="wsCopy('${f.share_token}')">📋 복사</button><a href="${B}/api/workspaces/shared/${f.share_token}" class="btn btn-s btn-sm" target="_blank">열기</a>`:`<button class="btn btn-p btn-sm" onclick="wsShare('${f.id}')">공유</button>`}</td></tr>`).join('')}</table>`:'<div class="empty">업로드된 파일 없음</div>';}
+function wsCopy(token){const url=B+'/api/workspaces/shared/'+token;navigator.clipboard.writeText(url).then(()=>toast('주소 복사됨!'));}
+
+async function wsShare(id){const r=await api('POST','/api/workspaces/share',{file_id:id});if(r.share_url){toast('공유 링크: '+B+r.share_url);navigator.clipboard?.writeText(B+r.share_url);}wsList();}
+async function kinClass(){const r=await api('POST','/api/kinesis/classify',{filename:V('kinF')});show('kinRes',r,!r.error);}
+async function emrAdd(){const r=await api('POST','/api/emr/config',{name:V('emrN'),target_dir:V('emrD'),max_size_mb:parseInt(V('emrM'))||100});show('emrRes',r,!r.error);}
+async function emrList(){const r=await api('GET','/api/emr/config');show('emrRes',r,!r.error);}
+
+// ===== DEPLOY =====
+async function lsDeploy(){const r=await api('POST','/api/lightsail/deploy/json',{name:V('lsN'),html:$('lsH').value});if(r.error)return toast(r.error,0);toast('배포: '+B+r.url);lsList();}
+async function lsList(){const r=await api('GET','/api/lightsail/sites');$('lsListEl').innerHTML=r.sites?.length?`<table class="tbl"><tr><th>이름</th><th>상태</th><th>URL</th><th></th></tr>${r.sites.map(s=>`<tr><td>${s.name}</td><td><span class="tag tag-g">${s.status}</span></td><td><a href="${B}/sites/${s.id}/" target="_blank">/sites/${s.id}/ ↗</a></td><td style="display:flex;gap:4px"><button class="btn btn-s btn-sm" onclick="lsEdit('${s.id}')">수정</button><button class="btn btn-d btn-sm" onclick="lsDel('${s.id}')">삭제</button></td></tr>`).join('')}</table>`:'<div class="empty">배포된 사이트 없음</div>';}
+async function ebDeploy(){const f=$('ebF').files[0];if(!f)return toast('파일을 선택하세요',0);const fd=new FormData();fd.append('file',f);fd.append('name',V('ebN')||f.name);toast('보안 검사 + 배포 중...');const r=await upload('/api/eb/deploy',fd);if(r.error)return toast(r.error,0);show('ebRes',r,true);toast(r.message||'배포 완료');ebList();}
+async function ebList(){const r=await api('GET','/api/eb/apps');$('ebListEl').innerHTML=r.apps?.length?`<table class="tbl"><tr><th>이름</th><th>런타임</th><th>포트</th><th>상태</th><th></th></tr>${r.apps.map(a=>`<tr><td><strong>${a.name}</strong></td><td>${a.runtime}</td><td class="mono">${a.port}</td><td><span class="tag tag-${a.status==='running'?'g':'r'}">${a.status}</span></td><td style="display:flex;gap:4px">${a.status==='running'?`<button class="btn btn-s btn-sm" onclick="ebStop('${a.id}')">중지</button>`:`<button class="btn btn-p btn-sm" onclick="ebStart('${a.id}')">시작</button>`}<button class="btn btn-d btn-sm" onclick="ebDelete('${a.id}')">삭제</button></td></tr>`).join('')}</table>`:'<div class="empty">배포된 앱 없음</div>';}
+async function ebStart(id){toast('시작 중...');const r=await api('POST','/api/eb/start',{app_id:id});if(r.error)return toast(r.error,0);toast(r.message+' 포트:'+r.port);ebList();}
+async function ebStop(id){const r=await api('POST','/api/eb/stop',{app_id:id});if(r.error)return toast(r.error,0);toast(r.message);ebList();}
+async function ebDelete(id){if(!await customConfirm('앱 삭제','정말 이 앱을 삭제할까요?',{okText:'삭제',danger:true}))return;const r=await api('POST','/api/eb/delete',{app_id:id});if(r.error)return toast(r.error,0);toast(r.message);ebList();}
+async function r53Add(){const r=await api('POST','/api/route53/records',{name:V('r53N'),target_type:'lightsail',target_id:V('r53T')});show('r53Res',r,!r.error);}
+async function elbSet(){const r=await api('POST','/api/elb/config',{name:V('elbN'),max_concurrent:parseInt(V('elbM'))||100});show('elbRes',r,!r.error);}
+async function elbGet(){const r=await api('GET','/api/elb/config');show('elbRes',r,!r.error);}
+
+// ===== SECURITY =====
+async function vpcAdd(){const r=await api('POST','/api/vpc/rules',{rule_type:$('vpcT').value,rule_value:V('vpcV')});if(r.error)return toast(r.error,0);toast('규칙 추가');vpcList();}
+async function vpcList(){const r=await api('GET','/api/vpc/rules');$('vpcListEl').innerHTML=r.rules?.length?`<table class="tbl"><tr><th>타입</th><th>값</th><th></th></tr>${r.rules.map(x=>`<tr><td><span class="tag tag-b">${x.rule_type}</span></td><td class="mono">${x.rule_value}</td><td><button class="btn btn-d btn-sm" onclick="vpcDel('${x.id}')">삭제</button></td></tr>`).join('')}</table>`:'';}
+async function vpcDel(id){await api('DELETE',`/api/vpc/rules/${id}`);vpcList();}
+async function asSet(){const r=await api('POST','/api/autoscaling/config',{max_requests_per_minute:parseInt(V('asR'))||60,auto_block:1,block_duration_minutes:parseInt(V('asB'))||30});show('asRes',r,!r.error);}
+async function asGet(){const r=await api('GET','/api/autoscaling/config');show('asRes',r,!r.error);}
+
+// ===== CLOUDWATCH =====
+async function cwSum(){const r=await api('GET','/api/cloudwatch/summary');if(r.error)return;const s=r.storage||{},v=r.services||{};$('cwSumEl').innerHTML=`<div class="stats"><div class="stat"><div class="stat-label">S3</div><div class="stat-val">${fmtB(s.s3_bytes||0)}</div></div><div class="stat"><div class="stat-label">EBS</div><div class="stat-val">${fmtB(s.ebs_bytes||0)}</div></div><div class="stat"><div class="stat-label">CloudFront</div><div class="stat-val">${fmtB(s.cloudfront_bytes||0)}</div></div><div class="stat"><div class="stat-label">EC2</div><div class="stat-val">${v.ec2_running||0}</div></div><div class="stat"><div class="stat-label">Lambda</div><div class="stat-val">${v.lambda_functions||0}</div></div><div class="stat"><div class="stat-label">Sites</div><div class="stat-val">${v.lightsail_sites||0}</div></div></div>`;}
+async function cwMet(){const s=$('cwSvc').value,h=V('cwH')||'24';const r=await api('GET',`/api/cloudwatch/metrics?hours=${h}${s?'&service='+s:''}`);show('cwMetRes',r,!r.error);}
+
+// ===== API KEYS =====
+async function newKey(){const r=await api('POST','/api/auth/keys',{name:V('newKeyN')||'key'});if(r.error)return toast(r.error,0);toast('발급: '+r.api_key.substring(0,15)+'...');navigator.clipboard?.writeText(r.api_key);keyList();}
+async function keyList(){
+  const r=await api('GET','/api/auth/keys');
+  if(!r.keys?.length){$('keyListEl').innerHTML='<div class="empty">없음</div>';return;}
+  const tagFor=t=>t==='anon'?'<span class="tag tag-b">anon</span>':t==='secret'?'<span class="tag tag-r">secret</span>':'<span class="tag tag-g">user</span>';
+  $('keyListEl').innerHTML=`<table class="tbl"><tr><th>타입</th><th>이름</th><th>키</th><th></th></tr>${r.keys.map(k=>`<tr>
+    <td>${tagFor(k.key_type||'user')}</td>
+    <td>${esc(k.name||'-')}</td>
+    <td class="mono">${esc(k.key.substring(0,20))}...</td>
+    <td>${k.key===K?'<span class="tag tag-g">현재</span>':(k.key_type==='anon'||k.key_type==='secret')?'<span style="color:var(--text3);font-size:11px">시스템</span>':`<button class="btn btn-d btn-sm" onclick="delKey(${JSON.stringify(k.key)})">삭제</button>`}</td>
+  </tr>`).join('')}</table>`;
+}
+async function delKey(k){if(!await customConfirm('삭제 확인','정말 삭제할까요?',{okText:'삭제',danger:true}))return;const r=await api('DELETE','/api/auth/keys/'+encodeURIComponent(k));if(r.error)return toast(r.error,0);toast('삭제됨');keyList();}
+
+// ===== ANON / SECRET =====
+let _secKey='',_secShow=false;
+async function specialKeys(){
+  const r=await api('GET','/api/auth/keys');
+  if(r.error)return;
+  const anon=r.keys.find(k=>k.key_type==='anon');
+  const sec=r.keys.find(k=>k.key_type==='secret');
+  $('anonKey').textContent=anon?anon.key:'(없음)';
+  _secKey=sec?sec.key:'';
+  $('secretKey').textContent=_secShow&&_secKey?_secKey:'••••••••••••••••••••••••••••';
+}
+function toggleSecret(){
+  _secShow=!_secShow;
+  $('secretKey').textContent=_secShow&&_secKey?_secKey:'••••••••••••••••••••••••••••';
+  $('secEye').setAttribute('data-lucide',_secShow?'eye-off':'eye');renderIcons();
+}
+function copyText(txt,msg){if(!txt||txt.startsWith('•')||txt==='(없음)'||txt==='-')return toast('복사할 값이 없음',0);navigator.clipboard?.writeText(txt);toast(msg||'복사됨');}
+async function rotateKey(kind){
+  if(!await customConfirm(`${kind} 키 재발급`,`기존 ${kind} 키는 즉시 무효화됩니다. 계속?`,{okText:'재발급',danger:true}))return;
+  const r=await api('POST','/api/auth/keys/rotate',{kind});
+  if(r.error)return toast(r.error,0);
+  toast(kind+' 키 재발급 완료');specialKeys();keyList();
+}
+
+// ===== DOCS =====
+const ENDPOINTS=[
+  {cat:'인증',eps:[{m:'POST',p:'/api/auth/register',d:'회원가입'},{m:'POST',p:'/api/auth/login',d:'로그인'},{m:'POST',p:'/api/auth/keys',d:'키 발급'},{m:'GET',p:'/api/auth/keys',d:'키 목록'}]},
+  {cat:'EC2',eps:[{m:'POST',p:'/api/ec2/instances',d:'인스턴스 생성'},{m:'GET',p:'/api/ec2/instances',d:'목록'},{m:'POST',p:'/api/ec2/exec',d:'명령어 실행'},{m:'DELETE',p:'/api/ec2/instances/:id',d:'종료'}]},
+  {cat:'Lambda',eps:[{m:'POST',p:'/api/lambda/functions',d:'함수 등록'},{m:'GET',p:'/api/lambda/functions',d:'목록'},{m:'POST',p:'/api/lambda/invoke',d:'실행'}]},
+  {cat:'S3',eps:[{m:'POST',p:'/api/s3/buckets',d:'버킷 생성'},{m:'GET',p:'/api/s3/buckets',d:'목록'},{m:'PUT',p:'/api/s3/objects',d:'저장'},{m:'GET',p:'/api/s3/objects?bucket=X&key=Y',d:'조회'},{m:'DELETE',p:'/api/s3/objects',d:'삭제'},{m:'POST',p:'/api/s3/upload',d:'파일 업로드'},{m:'POST',p:'/api/s3/sql',d:'SQL 실행'}]},
+  {cat:'Storage',eps:[{m:'POST',p:'/api/ebs/volumes',d:'EBS 볼륨'},{m:'PUT',p:'/api/ebs/data',d:'EBS 저장'},{m:'POST',p:'/api/cloudfront/store',d:'CF 저장'},{m:'POST',p:'/api/cloudformation/stacks',d:'임시 JSON'},{m:'POST',p:'/api/workspaces/upload',d:'파일 업로드'},{m:'POST',p:'/api/kinesis/classify',d:'파일 분류'},{m:'POST',p:'/api/emr/config',d:'EMR 설정'}]},
+  {cat:'배포',eps:[{m:'POST',p:'/api/lightsail/deploy/json',d:'HTML 배포'},{m:'POST',p:'/api/eb/deploy',d:'앱 배포'},{m:'POST',p:'/api/route53/records',d:'DB 연결'},{m:'POST',p:'/api/elb/config',d:'LB 설정'}]},
+  {cat:'보안',eps:[{m:'POST',p:'/api/vpc/rules',d:'VPC 규칙'},{m:'GET',p:'/api/vpc/rules',d:'규칙 목록'},{m:'POST',p:'/api/autoscaling/config',d:'트래픽 설정'}]},
+  {cat:'모니터링',eps:[{m:'GET',p:'/api/cloudwatch/summary',d:'요약'},{m:'GET',p:'/api/cloudwatch/dashboard',d:'대시보드'},{m:'GET',p:'/api/cloudwatch/metrics',d:'상세 메트릭'}]},
+];
+function renderDocs(){$('docsContent').innerHTML=ENDPOINTS.map(c=>`<h3 style="font-size:14px;font-weight:600;margin:18px 0 8px">${c.cat}</h3>${c.eps.map(e=>`<div class="ep"><div class="ep-h" onclick="this.nextElementSibling.classList.toggle('open')"><span class="ep-m ${e.m==='GET'?'get':e.m==='POST'?'post':e.m==='PUT'?'put':'del'}">${e.m}</span><span class="ep-p">${e.p}</span><span class="ep-d">${e.d}</span></div><div class="ep-body"><div class="code">${e.m} ${e.p}</div></div></div>`).join('')}`).join('');}
+renderDocs();
+
+// ===== CONNECTION TEST =====
+async function testConn(){try{const r=await fetch(B+'/api/cloudwatch/summary',{headers:{'X-API-Key':K,'ngrok-skip-browser-warning':'true'}});const d=await r.json();show('connRes',{status:r.status,ok:r.ok,...d},r.ok);}catch(e){show('connRes','실패: '+e.message,0);}}
+
+// ===== AI SQL HELPER =====
+async function aiSQL(){
+  const p=V('aiPrompt');if(!p)return toast('설명을 입력하세요',0);
+  toast('AI가 SQL 생성 중...');
+  const r=await api('POST','/api/ai/sql',{prompt:p});
+  console.log('AI SQL 응답:', r);
+  if(r.error){
+    const e=$('sqlRes');
+    e.innerHTML=`<div class="code" style="border-left:2px solid var(--red);white-space:pre-wrap">${r.error}</div>`;
+    toast('AI SQL 실패 - 아래 에러 확인',0);
+    return;
+  }
+  if(!r.sql){
+    const e=$('sqlRes');
+    e.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">응답에 sql 필드 없음: ${JSON.stringify(r)}</div>`;
+    toast('AI SQL 응답 오류',0);
+    return;
+  }
+  $('sqlTA').value=r.sql;
+  toast('SQL 생성 완료! 실행 버튼을 눌러주세요');
+}
+
+// ===== USER MANAGEMENT =====
+async function loadUsers(){
+  const r=await api('GET','/api/admin/users');
+  const el=$('userListEl');
+  if(r.error){el.innerHTML='<div class="empty">'+r.error+'</div>';return;}
+  if(!r.users?.length){el.innerHTML='<div class="empty">유저 없음</div>';return;}
+  el.innerHTML=`<table class="tbl"><tr><th>사용자명</th><th>ID</th><th>API Keys</th><th>EC2</th><th>Lambda</th><th>버킷</th><th>사이트</th><th>가입일</th></tr>
+    ${r.users.map(u=>`<tr>
+      <td><strong>${u.username}</strong></td>
+      <td class="mono">${u.id.substring(0,12)}...</td>
+      <td>${u.key_count}</td>
+      <td>${u.ec2_count}</td>
+      <td>${u.lambda_count}</td>
+      <td>${u.bucket_count}</td>
+      <td>${u.site_count}</td>
+      <td style="color:var(--text3)">${u.created_at||''}</td>
+    </tr>`).join('')}</table>`;
+}
+async function loadUserDetail(){
+  const id=V('userDetailId');if(!id)return;
+  const r=await api('GET','/api/admin/users/'+id+'/stats');
+  show('userDetailRes',r,!r.error);
+}
+
+// ===== EC2 강화: 히스토리 탐색, 탭, 파일 브라우저 =====
+
+
+async function loadActivity(){
+  const r=await api('GET','/api/activity/recent?limit=15');
+  const el=$('activityLog');
+  if(r.error||!r.activities?.length){el.innerHTML='<div class="empty">활동 없음</div>';return;}
+  const statusColor=s=>s>=200&&s<300?'var(--green)':s>=400?'var(--red)':'var(--yellow)';
+  el.innerHTML=r.activities.map(a=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">
+    <span style="width:6px;height:6px;border-radius:50%;background:${statusColor(a.status)};flex-shrink:0"></span>
+    <span style="flex:1;color:var(--text)">${a.desc}</span>
+    <span style="color:var(--text3);font-size:10px;font-family:var(--mono)">${a.duration_ms||0}ms</span>
+    <span style="color:var(--text3);font-size:10px;white-space:nowrap">${(a.time||'').substring(11,19)}</span>
+  </div>`).join('');
+}
+
+// ===== 서버 슬립 감지 =====
+let _srvDead = false;
+let _sleepCheckTimer = null;
+
+let _failCount = 0;
+function showSleepOverlay() {
+  _failCount++;
+  if (_failCount < 3) return; // 3번 연속 실패 후에만 표시
+  if (_srvDead) return;
+  _srvDead = true;
+  const ov = document.getElementById('sleepOverlay');
+  if (ov) { ov.style.display = 'flex'; }
+  _startSleepRetry();
+}
+
+function hideSleepOverlay() {
+  _srvDead = false;
+  _failCount = 0;
+  const ov = document.getElementById('sleepOverlay');
+  if (ov) { ov.style.display = 'none'; }
+  if (_sleepCheckTimer) { clearInterval(_sleepCheckTimer); _sleepCheckTimer = null; }
+  document.getElementById('sleepRetryMsg').textContent = '';
+}
+
+let _retryCount = 0;
+function _startSleepRetry() {
+  if (_sleepCheckTimer) clearInterval(_sleepCheckTimer);
+  _retryCount = 0;
+  _sleepCheckTimer = setInterval(async () => {
+    _retryCount++;
+    const msg = document.getElementById('sleepRetryMsg');
+    if (msg) msg.textContent = `자동 재시도 중... (${_retryCount}회)`;
+    const ok = await _checkServer();
+    if (ok) {
+      if (msg) msg.textContent = '연결 복구됨!';
+      setTimeout(hideSleepOverlay, 600);
+    }
+  }, 10000);
+}
+
+async function _checkServer() {
+  try {
+    const r = await fetch(B + '/api/cloudwatch/summary', {
+      headers: { 'X-API-Key': K, 'ngrok-skip-browser-warning': 'true' },
+      signal: AbortSignal.timeout(10000)
+    });
+    return r.ok;
+  } catch { return false; }
+}
+
+async function retrySrv() {
+  const msg = document.getElementById('sleepRetryMsg');
+  if (msg) msg.textContent = '연결 시도 중...';
+  const ok = await _checkServer();
+  if (ok) {
+    if (msg) msg.textContent = '연결 복구됨!';
+    setTimeout(hideSleepOverlay, 600);
+  } else {
+    if (msg) msg.textContent = '❌ 아직 연결 안 됨. 서버를 확인해주세요.';
+  }
+}
+
+// API 래퍼에 슬립 감지 통합
+const _origApi = api;
+api = async function(method, path, body, auth=true) {
+  try {
+    const o = { method, headers: { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': 'true' } };
+    if (auth && K) o.headers['X-API-Key'] = K;
+    if (body && method !== 'GET') o.body = JSON.stringify(body);
+    o.signal = AbortSignal.timeout(15000);
+    const r = await fetch(B + path, o);
+    // 서버 응답 왔으면 슬립 해제
+    _failCount = 0; if (_srvDead) hideSleepOverlay();
+    return await r.json();
+  } catch(e) {
+    // 로그인 화면이 표시 중이면 슬립 오버레이 안 띄움
+    const loginVisible = !document.getElementById('loginScr')?.classList.contains('hide');
+    if (!loginVisible && K && B) {
+      showSleepOverlay();
+    }
+    return { error: e.message };
+  }
+};
+
+// 로그인 상태에서 주기적 서버 체크 (60초)
+let _aliveTimer = null;
+function startAliveCheck() {
+  if (_aliveTimer) clearInterval(_aliveTimer);
+  _aliveTimer = setInterval(async () => {
+    if (!K || !B) return;
+    const loginVisible = !document.getElementById('loginScr')?.classList.contains('hide');
+    if (loginVisible) return;
+    const ok = await _checkServer();
+    if (!ok && !_srvDead) showSleepOverlay();
+  }, 60000);
+}
+
+</script>
+</body>
+</html>
