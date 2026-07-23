@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AOAO Cloud</title>
+<title>MCloud</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -13,7 +13,7 @@
 --border:#e5e7eb;--border2:#d1d5db;
 --text:#1a1d21;--text2:#5e6267;--text3:#9ca0a6;--dim:#c4c7cc;
 --green:#2563eb;--green2:#1d4ed8;--green-a:#2563eb12;
---red:#ef4444;--blue:#2563eb;--yellow:#f59e0b;--purple:#7c3aed;--orange:#f97316;--cyan:#0891b2;
+--red:#ef4444;--blue:#2563eb;--yellow:#0284c7;--purple:#1e40af;--orange:#f97316;--cyan:#0891b2;
 --font:'DM Sans',system-ui,sans-serif;--mono:'DM Mono','SF Mono',monospace;
 }
 html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:14px;overflow:hidden}
@@ -190,7 +190,7 @@ a{color:var(--green);text-decoration:none}
 .apikey span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /*=== TOAST ===*/
-.toast-area{position:fixed;top:54px;right:14px;z-index:99999;display:flex;flex-direction:column;gap:6px}
+.toast-area{position:fixed;top:54px;right:14px;z-index:999998;display:flex;flex-direction:column;gap:6px}
 .toast{background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:10px 14px;font-size:12px;display:flex;align-items:center;gap:8px;min-width:220px;box-shadow:0 6px 20px rgba(0,0,0,.5);animation:tIn .2s}
 .toast.ok{border-left:3px solid var(--green)}
 .toast.err{border-left:3px solid var(--red)}
@@ -214,69 +214,265 @@ a{color:var(--green);text-decoration:none}
 .ep-body.open{display:block}
 
 /*=== LOGIN ===*/
-.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 50%,#f8f9fb 100%);display:flex;align-items:center;justify-content:center;z-index:99998;overflow:hidden;display:none}
-.login-screen.show{display:flex}
+.login-screen{position:fixed;inset:0;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 50%,#f8f9fb 100%);align-items:center;justify-content:center;z-index:99998;overflow:hidden;display:none;opacity:0;transition:opacity .35s cubic-bezier(.16,1,.3,1)}
+.login-screen.show{display:flex;opacity:1}
 
-/* ========== LANDING (마케팅 홈) ========== */
-.lnd-screen{position:fixed;inset:0;background:#fafbfc;z-index:99996;overflow-y:auto;display:none;color:#0f1116;font-family:inherit}
-.lnd-screen.show{display:block}
-.lnd-nav{display:flex;align-items:center;padding:18px 40px;background:rgba(255,255,255,.85);backdrop-filter:blur(10px);position:sticky;top:0;z-index:5;border-bottom:1px solid #e5e7eb}
-.lnd-nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;color:#0f1116}
-.lnd-nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
-.lnd-nav-link{color:#4b5563;text-decoration:none;font-size:14px;padding:8px 12px;border-radius:6px;transition:.1s}
-.lnd-nav-link:hover{color:#0f1116;background:#f3f4f6}
-.lnd-btn{border:none;background:transparent;padding:9px 18px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .12s;display:inline-flex;align-items:center;gap:6px;font-family:inherit}
-.lnd-btn-p{background:linear-gradient(135deg,#3b82f6,#6366f1);color:#fff}
-.lnd-btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(99,102,241,.35)}
-.lnd-btn-ghost{color:#0f1116;background:transparent}
-.lnd-btn-ghost:hover{background:#f3f4f6}
-.lnd-btn-lg{padding:13px 26px;font-size:15px;border-radius:10px}
-.lnd-hero{max-width:1100px;margin:0 auto;padding:80px 40px 60px;text-align:center}
-.lnd-hero-badge{display:inline-block;padding:6px 14px;background:#eef2ff;color:#4f46e5;border-radius:100px;font-size:12px;font-weight:600;margin-bottom:24px}
-.lnd-hero-title{font-size:56px;line-height:1.1;font-weight:800;margin:0 0 20px;letter-spacing:-1.5px;color:#0f1116}
-.lnd-hero-grad{background:linear-gradient(135deg,#3b82f6 0%,#8b5cf6 50%,#ec4899 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.lnd-hero-sub{font-size:19px;color:#4b5563;margin:0 0 36px;line-height:1.5;max-width:640px;margin-left:auto;margin-right:auto}
-.lnd-hero-cta{display:flex;gap:12px;justify-content:center;margin-bottom:64px;flex-wrap:wrap}
-.lnd-hero-code{max-width:780px;margin:0 auto;background:#0d1117;border-radius:14px;box-shadow:0 30px 60px -20px rgba(0,0,0,.3);overflow:hidden;text-align:left}
-.lnd-code-bar{background:#161b22;padding:10px 14px;display:flex;align-items:center;gap:6px;border-bottom:1px solid #21262d}
-.lnd-code-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
-.lnd-code-title{margin-left:12px;font-size:11px;color:#8b949e;font-family:var(--mono)}
-.lnd-code-body{margin:0;padding:22px 24px;font-family:var(--mono);font-size:13px;line-height:1.7;color:#e6edf3;overflow-x:auto;white-space:pre}
-.lnd-code-c{color:#7ee787}
-.lnd-features{max-width:1100px;margin:0 auto;padding:80px 40px}
-.lnd-sec-title{text-align:center;font-size:36px;font-weight:800;margin:0 0 48px;color:#0f1116;letter-spacing:-1px}
-.lnd-feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
-.lnd-feat{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:26px;transition:.15s}
-.lnd-feat:hover{transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(0,0,0,.1);border-color:#d1d5db}
-.lnd-feat-ico{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:14px}
-.lnd-feat h3{margin:0 0 6px;font-size:16px;font-weight:700;color:#0f1116}
-.lnd-feat p{margin:0;color:#4b5563;font-size:13px;line-height:1.5}
-.lnd-security{max-width:900px;margin:0 auto;padding:80px 40px;background:#fff;border-radius:20px;margin-bottom:60px}
-.lnd-sec-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.lnd-sec-item{display:flex;align-items:center;gap:10px;padding:14px 16px;background:#f9fafb;border-radius:10px;font-size:14px;color:#111827}
-.lnd-check{color:#22c55e;font-weight:700;font-size:16px;flex-shrink:0}
-.lnd-foot{max-width:1100px;margin:0 auto;padding:40px;display:flex;align-items:center;color:#6b7280;font-size:13px;border-top:1px solid #e5e7eb}
-.lnd-foot-links{margin-left:auto}
-@media(max-width:768px){
+/* ========== LANDING (Blue theme + heavy animations) ========== */
+.lnd-screen{position:fixed;inset:0;background:#f8fafc;z-index:99996;overflow-y:auto;display:none;color:#0f1116;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Pretendard',sans-serif;-webkit-font-smoothing:antialiased}
+.lnd-screen.show{display:block;animation:lndFadeIn .6s cubic-bezier(.16,1,.3,1)}
+.lnd-screen.leaving{animation:lndFadeOut .35s ease forwards}
+@keyframes lndFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes lndFadeOut{from{opacity:1;transform:scale(1)}to{opacity:0;transform:scale(.98)}}
+
+/* === 배경 애니메이션 === */
+.lnd-bg{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.lnd-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(59,130,246,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,.05) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse at 50% 0%,#000 25%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at 50% 0%,#000 25%,transparent 70%);animation:gridDrift 40s linear infinite}
+@keyframes gridDrift{0%{background-position:0 0,0 0}100%{background-position:60px 60px,60px 60px}}
+.lnd-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.45;animation:orbFloat 22s ease-in-out infinite}
+.lnd-orb1{width:600px;height:600px;background:radial-gradient(#93c5fd,transparent 70%);top:-250px;left:-100px}
+.lnd-orb2{width:520px;height:520px;background:radial-gradient(#38bdf8,transparent 70%);top:10%;right:-180px;animation-delay:-8s}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1) rotate(0deg)}33%{transform:translate(40px,-30px) scale(1.1) rotate(120deg)}66%{transform:translate(-30px,40px) scale(.95) rotate(240deg)}}
+
+/* === 등장 애니메이션 (reveal) === */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* === Nav === */
+.lnd-nav{position:sticky;top:0;z-index:10;display:flex;align-items:center;padding:14px 48px;background:rgba(248,250,252,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid rgba(59,130,246,.08);transition:padding .2s}
+.lnd-nav.scrolled{padding:10px 48px;box-shadow:0 4px 20px -8px rgba(0,0,0,.06)}
+.lnd-nav-logo{display:flex;align-items:center;gap:11px;font-weight:800;font-size:18px;color:#0f1116;letter-spacing:-.3px;cursor:pointer}
+.lnd-nav-logo-mark{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.lnd-nav-logo:hover .lnd-nav-logo-mark{transform:rotate(-8deg) scale(1.1)}
+.lnd-nav-right{margin-left:auto;display:flex;align-items:center;gap:2px}
+.lnd-nav-link{color:#4b5563;text-decoration:none;font-size:13.5px;font-weight:500;padding:8px 14px;border-radius:7px;position:relative;transition:color .2s}
+.lnd-nav-link::after{content:'';position:absolute;bottom:4px;left:50%;width:0;height:2px;background:linear-gradient(90deg,#38bdf8,#3b82f6);transition:.25s cubic-bezier(.16,1,.3,1);transform:translateX(-50%);border-radius:2px}
+.lnd-nav-link:hover{color:#0f1116}
+.lnd-nav-link:hover::after{width:calc(100% - 28px)}
+.lnd-nav-right .lnd-btn{margin-left:6px}
+
+/* Buttons — 통일된 높이 + shine 효과 */
+.lnd-btn{border:none;background:transparent;height:40px;padding:0 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;position:relative;overflow:hidden;white-space:nowrap;line-height:1}
+.lnd-btn::after{content:'';position:absolute;top:0;bottom:0;left:0;width:60%;background:linear-gradient(120deg,transparent 0%,rgba(255,255,255,.4) 50%,transparent 100%);transform:translateX(-200%) skewX(-20deg);transition:transform .7s ease;pointer-events:none}
+.lnd-btn:hover::after{transform:translateX(300%) skewX(-20deg)}
+.lnd-btn-p{background:linear-gradient(135deg,#38bdf8 0%,#3b82f6 50%,#1d4ed8 100%);color:#fff;background-size:200% 200%;background-position:0% 50%;box-shadow:0 4px 12px -4px rgba(59,130,246,.4)}
+.lnd-btn-p:hover{background-position:100% 50%;box-shadow:0 14px 32px -8px rgba(59,130,246,.55);transform:translateY(-2px)}
+.lnd-btn-p:active{transform:translateY(0)}
+.lnd-btn-ghost{color:#0f1116}
+.lnd-btn-ghost:hover{background:rgba(59,130,246,.08);color:#1d4ed8}
+.lnd-btn-line{color:#0f1116;background:#fff;border:1px solid rgba(0,0,0,.1);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.lnd-btn-line:hover{border-color:#3b82f6;color:#1d4ed8;transform:translateY(-2px);box-shadow:0 10px 24px -8px rgba(59,130,246,.25)}
+.lnd-btn-lg{height:48px;padding:0 26px;font-size:14.5px;border-radius:10px}
+
+/* === HERO === */
+.lnd-hero{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:100px 48px 60px;display:grid;grid-template-columns:1.2fr 1fr;gap:60px;align-items:end}
+.lnd-title{font-size:72px;line-height:1.02;font-weight:800;margin:0 0 32px;letter-spacing:-3px;color:#0f1116;font-family:inherit}
+.lnd-title-line{display:block;overflow:hidden}
+.lnd-title-line>*{display:inline-block;animation:titleRise 1s cubic-bezier(.16,1,.3,1) both}
+.lnd-title-line:nth-child(1)>*{animation-delay:.05s}
+.lnd-title-line:nth-child(2)>*{animation-delay:.2s}
+@keyframes titleRise{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.lnd-title-grad{background:linear-gradient(135deg,#38bdf8 0%,#3b82f6 40%,#1d4ed8 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;background-size:200% 200%;animation:gradShift 8s ease infinite,titleRise 1s cubic-bezier(.16,1,.3,1) both}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.lnd-hero-cta{display:flex;gap:10px;flex-wrap:wrap;animation:heroCtaIn 1s cubic-bezier(.16,1,.3,1) .5s both}
+@keyframes heroCtaIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.lnd-hero-r{padding-bottom:20px;animation:heroCtaIn 1s cubic-bezier(.16,1,.3,1) .3s both}
+.lnd-sub{font-size:18px;color:#4b5563;margin:0;line-height:1.6;font-weight:400}
+.lnd-sub b{color:#0f1116;font-weight:600}
+
+/* === Trusted band (마퀴 애니메이션) === */
+.lnd-trust-band{position:relative;z-index:1;max-width:1240px;margin:60px auto 0;padding:44px 48px;border-top:1px solid rgba(59,130,246,.08);border-bottom:1px solid rgba(59,130,246,.08);overflow:hidden}
+.lnd-trust-title{font-size:13px;color:#6b7280;margin-bottom:24px;font-weight:500;text-align:center}
+.lnd-trust-logos{display:flex;justify-content:space-around;align-items:center;gap:20px;flex-wrap:wrap}
+.lnd-logo{font-size:22px;font-weight:800;color:#9ca3af;letter-spacing:-1px;transition:.25s cubic-bezier(.16,1,.3,1);font-family:-apple-system,BlinkMacSystemFont,sans-serif;position:relative}
+.lnd-logo:hover{color:#3b82f6;transform:scale(1.08)}
+
+/* === FEATURE CARDS === */
+.lnd-features{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:80px 48px;display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px}
+.lnd-fbig,.lnd-fmed{background:#fff;border:1px solid rgba(59,130,246,.1);border-radius:16px;padding:32px;transition:all .3s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
+.lnd-fbig::before,.lnd-fmed::before{content:'';position:absolute;top:-50%;right:-50%;width:200px;height:200px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);opacity:0;transition:.4s;pointer-events:none}
+.lnd-fbig:hover,.lnd-fmed:hover{border-color:rgba(59,130,246,.35);box-shadow:0 24px 48px -20px rgba(59,130,246,.2);transform:translateY(-6px)}
+.lnd-fbig:hover::before,.lnd-fmed:hover::before{opacity:1;top:-30%;right:-30%}
+.lnd-fbig>*,.lnd-fmed>*{position:relative;z-index:1}
+.lnd-fbig{display:flex;gap:32px;grid-column:span 1;grid-row:span 2;min-height:440px}
+.lnd-fbig-l{flex:1}
+.lnd-fbig-r{flex:0 0 220px;display:flex;align-items:center;justify-content:center}
+.lnd-fbig-r svg{animation:floatDb 6s ease-in-out infinite}
+@keyframes floatDb{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-10px) rotate(2deg)}}
+.lnd-fbig h3,.lnd-fmed h3{margin:0 0 12px;font-size:22px;font-weight:700;color:#0f1116;display:flex;align-items:center;gap:10px;letter-spacing:-.5px}
+.lnd-fbig h3 svg,.lnd-fmed h3 svg{width:22px;height:22px;color:#3b82f6}
+.lnd-fbig p,.lnd-fmed p{margin:0 0 18px;color:#4b5563;font-size:14.5px;line-height:1.6}
+.lnd-fbig p b,.lnd-fmed p b{color:#0f1116;font-weight:600}
+.lnd-checks{list-style:none;padding:0;margin:0}
+.lnd-checks li{padding:6px 0 6px 26px;position:relative;font-size:13.5px;color:#0f1116;font-weight:500;opacity:0;animation:checkIn .5s cubic-bezier(.16,1,.3,1) both}
+.lnd-checks li:nth-child(1){animation-delay:.1s}
+.lnd-checks li:nth-child(2){animation-delay:.2s}
+.lnd-checks li:nth-child(3){animation-delay:.3s}
+@keyframes checkIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+.lnd-checks li::before{content:'✓';position:absolute;left:0;top:6px;color:#3b82f6;font-weight:700}
+.lnd-fmed{grid-column:span 1;grid-row:span 1;min-height:212px;display:flex;flex-direction:column}
+.lnd-fmed-visual{margin-top:auto}
+.lnd-key-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#f8fafc;border-radius:8px;margin-bottom:6px;border:1px solid rgba(59,130,246,.06);transition:.2s}
+.lnd-key-row:hover{background:#eff6ff;border-color:rgba(59,130,246,.15)}
+.lnd-key-row code{font-size:11px;font-family:var(--mono);color:#4b5563;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lnd-key-badge{font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;letter-spacing:.5px}
+.lnd-key-anon{background:#dbeafe;color:#1d4ed8}
+.lnd-key-secret{background:#fee2e2;color:#dc2626}
+.lnd-fmed-code{background:#0d1117;border-radius:8px;padding:12px;font-family:var(--mono);font-size:11.5px;color:#e6edf3}
+.lnd-code-mini{padding:2px 0}
+.lnd-code-mini.lnd-code-ok{color:#7ee787}
+
+/* === Section titles === */
+.lnd-sec-title{font-size:44px;font-weight:800;margin:0 0 14px;letter-spacing:-1.5px;color:#0f1116;line-height:1.1}
+.lnd-sec-sub{color:#4b5563;font-size:17px;line-height:1.5;margin:0 0 40px;max-width:600px}
+.lnd-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:2px;color:#3b82f6;text-transform:uppercase;margin-bottom:12px;position:relative;padding-left:24px}
+.lnd-eyebrow::before{content:'';position:absolute;left:0;top:50%;width:16px;height:2px;background:linear-gradient(90deg,#38bdf8,#3b82f6);border-radius:2px}
+.lnd-sec-head{max-width:640px;margin:0 auto 44px;text-align:center}
+
+/* === PRODUCT SHOWCASE === */
+.lnd-showcase{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:60px 48px}
+.lnd-showcase>.lnd-sec-title{text-align:left;font-size:36px}
+.lnd-showcase>.lnd-sec-sub{text-align:left;margin-bottom:28px}
+.lnd-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.lnd-tab-btn{background:#fff;border:1px solid rgba(0,0,0,.1);color:#0f1116;height:40px;padding:0 20px;border-radius:100px;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s cubic-bezier(.16,1,.3,1);font-family:inherit;display:inline-flex;align-items:center}
+.lnd-tab-btn:hover{border-color:#3b82f6;color:#1d4ed8;transform:translateY(-1px)}
+.lnd-tab-btn.active{background:linear-gradient(135deg,#3b82f6,#1d4ed8);color:#fff;border-color:transparent;box-shadow:0 4px 12px -4px rgba(59,130,246,.5)}
+.lnd-showcase-frame{background:#fff;border:1px solid rgba(59,130,246,.1);border-radius:20px;overflow:hidden;box-shadow:0 40px 80px -30px rgba(59,130,246,.2);transition:.3s}
+.lnd-showcase-frame:hover{box-shadow:0 50px 100px -30px rgba(59,130,246,.3);transform:translateY(-4px)}
+.lnd-mock-head{background:#f6f7f9;padding:0 16px;height:44px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(0,0,0,.06);font-size:12px;color:#6b7280;font-family:var(--mono)}
+.lnd-mock-head i{width:11px;height:11px;border-radius:50%;background:#e5e7eb}
+.lnd-mock-head i:nth-child(1){background:#ff5f57}
+.lnd-mock-head i:nth-child(2){background:#febc2e}
+.lnd-mock-head i:nth-child(3){background:#28c840}
+.lnd-mock-head span{margin-left:12px}
+.lnd-mock-body{padding:28px;background:#0d1117;color:#e6edf3;font-family:var(--mono);font-size:14px;line-height:1.7;min-height:280px;animation:mockFade .35s ease}
+@keyframes mockFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.lnd-mock-body pre{margin:0}
+.lnd-mock-result{margin-top:16px;color:#7ee787;font-size:12px;animation:mockFade .5s ease .2s both}
+.lnd-mock-tbl{width:100%;border-collapse:collapse;color:#e6edf3;background:transparent}
+.lnd-mock-tbl th{text-align:left;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#8b949e;border-bottom:1px solid #21262d;font-weight:600}
+.lnd-mock-tbl td{padding:10px 12px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.05)}
+.lnd-mock-tbl tr{animation:rowIn .4s cubic-bezier(.16,1,.3,1) both}
+.lnd-mock-tbl tr:nth-child(1){animation-delay:.05s}
+.lnd-mock-tbl tr:nth-child(2){animation-delay:.1s}
+.lnd-mock-tbl tr:nth-child(3){animation-delay:.15s}
+.lnd-mock-tbl tr:nth-child(4){animation-delay:.2s}
+@keyframes rowIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.lnd-tag-ok{background:rgba(34,197,94,.15);color:#7ee787;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.lnd-tag-no{background:rgba(220,38,38,.15);color:#ff8a8a;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+
+/* === FRAMEWORK === */
+.lnd-fw{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:60px 48px;display:grid;grid-template-columns:1fr 1.3fr;gap:60px;align-items:center}
+.lnd-fw-l h2{text-align:left;font-size:38px}
+.lnd-fw-l>.lnd-sec-sub{text-align:left}
+.lnd-fw-tabs{display:flex;gap:2px;margin-bottom:16px;background:#f1f5f9;padding:4px;border-radius:10px;border:1px solid rgba(59,130,246,.08);width:fit-content}
+.lnd-fw-tab{background:transparent;border:none;color:#4b5563;height:36px;padding:0 16px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:.2s;display:inline-flex;align-items:center;gap:4px}
+.lnd-fw-tab:hover{color:#0f1116}
+.lnd-fw-tab.active{background:#fff;color:#1d4ed8;box-shadow:0 2px 6px rgba(59,130,246,.15)}
+.lnd-fw .lnd-code{background:#0d1117;border-radius:14px;border:1px solid rgba(0,0,0,.06);overflow:hidden;box-shadow:0 30px 60px -30px rgba(59,130,246,.3);position:relative}
+.lnd-fw .lnd-code::before{content:'';position:absolute;inset:-2px;background:linear-gradient(135deg,#38bdf8,#3b82f6,#1d4ed8,#38bdf8);background-size:400% 400%;border-radius:14px;filter:blur(20px);opacity:.15;animation:gradShift 8s ease infinite;z-index:-1}
+.lnd-code-body{margin:0;padding:24px 28px;font-family:'SF Mono','JetBrains Mono',Menlo,monospace;font-size:13.5px;line-height:1.75;color:#e6edf3;overflow-x:auto;white-space:pre}
+.c-k{color:#60a5fa}
+.c-s{color:#86efac}
+.c-c{color:#7d8590;font-style:italic}
+.c-f{color:#38bdf8}
+
+/* === TEMPLATES === */
+.lnd-tpl{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:80px 48px}
+.lnd-tpl-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:36px;gap:20px;flex-wrap:wrap}
+.lnd-tpl-head .lnd-sec-title{font-size:38px;margin:0}
+.lnd-tpl-head .lnd-sec-sub{margin:6px 0 0}
+.lnd-tpl-more{color:#3b82f6;text-decoration:none;font-size:14px;font-weight:600;transition:.2s}
+.lnd-tpl-more:hover{color:#1d4ed8;transform:translateX(4px)}
+.lnd-tpl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.lnd-tpl-card{background:#fff;border:1px solid rgba(59,130,246,.1);border-radius:14px;padding:24px;transition:.25s cubic-bezier(.16,1,.3,1);cursor:pointer;position:relative;overflow:hidden}
+.lnd-tpl-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#38bdf8,#3b82f6,#1d4ed8);transform:scaleX(0);transform-origin:left;transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.lnd-tpl-card:hover{border-color:rgba(59,130,246,.3);transform:translateY(-4px);box-shadow:0 20px 40px -20px rgba(59,130,246,.25)}
+.lnd-tpl-card:hover::before{transform:scaleX(1)}
+.lnd-tpl-badge{width:44px;height:44px;background:linear-gradient(135deg,#dbeafe,#eff6ff);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px;transition:.25s}
+.lnd-tpl-card:hover .lnd-tpl-badge{transform:rotate(-6deg) scale(1.08)}
+.lnd-tpl-card h4{margin:0 0 6px;font-size:15px;font-weight:700;color:#0f1116}
+.lnd-tpl-card p{margin:0 0 12px;color:#4b5563;font-size:13px;line-height:1.5}
+.lnd-tpl-tags{display:flex;gap:6px;flex-wrap:wrap}
+.lnd-tpl-tags span{font-size:11px;padding:3px 8px;background:#dbeafe;color:#1d4ed8;border-radius:6px;font-weight:600}
+
+/* === QUOTES === */
+.lnd-quotes{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:80px 48px}
+.lnd-q-grid{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr;gap:8px;height:400px}
+.lnd-q{border-radius:16px;overflow:hidden;position:relative;transition:.3s cubic-bezier(.16,1,.3,1);cursor:pointer;box-shadow:0 20px 40px -20px rgba(0,0,0,.2)}
+.lnd-q::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,transparent 40%,transparent 60%,rgba(0,0,0,.18) 100%);pointer-events:none}
+.lnd-q::after{content:'';position:absolute;top:-40%;left:-20%;width:80%;height:80%;background:radial-gradient(circle,rgba(255,255,255,.3),transparent 60%);pointer-events:none;transition:.5s cubic-bezier(.16,1,.3,1)}
+.lnd-q:hover{transform:translateY(-6px);box-shadow:0 32px 60px -20px rgba(0,0,0,.35)}
+.lnd-q:hover::after{top:-20%;left:0%}
+.lnd-q-big{padding:36px 40px;color:#fff;display:flex;flex-direction:column}
+.lnd-q-big>*{position:relative;z-index:1}
+.lnd-q-mark{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.lnd-q-tag{font-size:12px;opacity:.85;margin-bottom:auto}
+.lnd-q-big blockquote{font-size:19px;line-height:1.5;font-weight:600;margin:24px 0 0;letter-spacing:-.3px;max-width:520px}
+.lnd-q-author{margin-top:16px;font-size:13px;opacity:.9;font-weight:500}
+.lnd-q-side{display:flex;align-items:flex-end;padding:24px;color:#fff}
+.lnd-q-side>*{position:relative;z-index:1}
+.lnd-q-side-mark{font-size:16px;font-weight:800;letter-spacing:-.3px;writing-mode:vertical-rl;transform:rotate(180deg);text-shadow:0 2px 8px rgba(0,0,0,.25)}
+
+/* === FINAL CTA === */
+.lnd-final{position:relative;z-index:1;max-width:1000px;margin:40px auto 60px;padding:0 48px}
+.lnd-final-inner{background:linear-gradient(135deg,#eff6ff 0%,#dbeafe 100%);border:1px solid rgba(59,130,246,.15);border-radius:24px;padding:64px 48px;text-align:center;position:relative;overflow:hidden}
+.lnd-final-inner::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(#93c5fd,transparent 60%);opacity:.6;filter:blur(60px);animation:ctaFloat 8s ease-in-out infinite}
+@keyframes ctaFloat{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.15)}}
+.lnd-final-inner>*{position:relative;z-index:1}
+.lnd-final-inner h2{font-size:44px;font-weight:800;color:#0f1116;margin:0 0 12px;letter-spacing:-1.5px;line-height:1.15}
+.lnd-final-inner p{color:#4b5563;font-size:16px;margin:0 0 28px}
+.lnd-cta{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* === FOOTER === */
+.lnd-foot{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:36px 48px;display:flex;align-items:center;border-top:1px solid rgba(59,130,246,.08);gap:24px;flex-wrap:wrap}
+.lnd-foot-l p{color:#6b7280;font-size:12px;margin:8px 0 0}
+.lnd-foot-r{margin-left:auto}
+
+/* === Responsive === */
+@media(max-width:1000px){
+  .lnd-hero{grid-template-columns:1fr;gap:24px;padding:60px 24px 40px}
+  .lnd-hero-r{padding:0}
+  .lnd-title{font-size:52px;letter-spacing:-2px}
+  .lnd-features{grid-template-columns:1fr;padding:60px 24px}
+  .lnd-fbig{grid-column:span 1;grid-row:span 1;flex-direction:column;min-height:auto}
+  .lnd-fbig-r{flex:0 0 auto}
+  .lnd-fw{grid-template-columns:1fr;padding:60px 24px;gap:32px}
+  .lnd-fw-l h2,.lnd-showcase>.lnd-sec-title{font-size:30px}
+  .lnd-tpl-head{flex-direction:column;align-items:flex-start}
+  .lnd-tpl-head .lnd-sec-title{font-size:30px}
+  .lnd-q-grid{grid-template-columns:1fr;height:auto}
+  .lnd-q-side{height:100px;padding:20px}
+  .lnd-q-side-mark{writing-mode:horizontal-tb;transform:none}
+  .lnd-showcase,.lnd-tpl,.lnd-quotes{padding:60px 24px}
   .lnd-nav{padding:14px 20px}.lnd-nav-link{display:none}
-  .lnd-hero{padding:50px 20px 40px}.lnd-hero-title{font-size:36px}.lnd-hero-sub{font-size:15px}
-  .lnd-features,.lnd-security{padding:50px 20px}.lnd-sec-title{font-size:26px}
-  .lnd-sec-grid{grid-template-columns:1fr}
-  .lnd-foot{flex-direction:column;gap:14px;padding:30px 20px}
-  .lnd-code-body{font-size:11px}
+  .lnd-trust-band{padding:32px 24px;margin-top:40px}
+  .lnd-trust-logos{justify-content:center;gap:24px}
+  .lnd-logo{font-size:16px}
+  .lnd-final{padding:0 24px}.lnd-final-inner{padding:40px 24px}.lnd-final-inner h2{font-size:30px}
+  .lnd-foot{padding:24px}.lnd-foot-r{margin-left:0;width:100%}
+  .lnd-sec-title{font-size:30px}
+  .lnd-mock-body{padding:20px;font-size:12px;min-height:220px}
 }
 
+
 /* ========== PROJECTS 화면 ========== */
-.prj-screen{position:fixed;inset:0;background:var(--bg);z-index:99995;overflow-y:auto;display:none}
-.prj-screen.show{display:block}
+.prj-screen{position:fixed;inset:0;background:var(--bg);z-index:99995;overflow-y:auto;display:none;opacity:0;transition:opacity .35s cubic-bezier(.16,1,.3,1)}
+.prj-screen.show{display:block;opacity:1}
+.prj-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all .18s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden;opacity:0;transform:translateY(12px);animation:prjIn .5s cubic-bezier(.16,1,.3,1) forwards}
+.prj-card:nth-child(1){animation-delay:.04s}
+.prj-card:nth-child(2){animation-delay:.08s}
+.prj-card:nth-child(3){animation-delay:.12s}
+.prj-card:nth-child(4){animation-delay:.16s}
+.prj-card:nth-child(5){animation-delay:.2s}
+.prj-card:nth-child(6){animation-delay:.24s}
+@keyframes prjIn{to{opacity:1;transform:translateY(0)}}
 .prj-topbar{display:flex;align-items:center;padding:14px 32px;background:var(--bg2);border-bottom:1px solid var(--border);gap:16px}
 .prj-user{padding:5px 12px;background:var(--surface);border-radius:100px;font-size:12px;color:var(--text2);font-weight:600}
 .prj-body{max-width:1200px;margin:0 auto;padding:48px 32px}
 .prj-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;gap:20px;flex-wrap:wrap}
 .prj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.prj-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
 .prj-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 12px 30px -12px rgba(0,0,0,.12)}
-.prj-card-icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin-bottom:14px}
+.prj-card-icon{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#0ea5e9);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;margin-bottom:14px}
 .prj-card h3{margin:0 0 6px;font-size:16px;color:var(--text)}
 .prj-card-desc{color:var(--text3);font-size:12px;margin-bottom:14px;line-height:1.5;min-height:32px}
 .prj-card-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);padding-top:12px;border-top:1px solid var(--border)}
@@ -287,7 +483,8 @@ a{color:var(--green);text-decoration:none}
 .prj-card-new:hover{border-color:var(--blue);color:var(--blue);background:var(--surface)}
 .login-screen.hide{display:none}
 .login-bg-blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.35;pointer-events:none}
-.login-card{width:420px;max-width:92vw;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:40px 36px 32px;box-shadow:0 24px 80px rgba(37,99,235,.12),0 2px 12px rgba(0,0,0,.05);position:relative;z-index:1}
+.login-card{width:420px;max-width:92vw;background:#fff;border:1px solid #e5e7eb;border-radius:20px;padding:40px 36px 32px;box-shadow:0 24px 80px rgba(37,99,235,.12),0 2px 12px rgba(0,0,0,.05);position:relative;z-index:1;transform:translateY(20px) scale(.97);opacity:0;transition:opacity .4s cubic-bezier(.16,1,.3,1) .05s,transform .4s cubic-bezier(.16,1,.3,1) .05s}
+.login-screen.show .login-card{opacity:1;transform:translateY(0) scale(1)}
 .login-logo{font-size:20px;font-weight:800;color:var(--green);margin-bottom:2px;display:flex;align-items:center;gap:10px;letter-spacing:-.3px}
 .login-sub{font-size:12px;color:var(--text3);margin-bottom:24px}
 .login-tabs{display:flex;gap:0;background:var(--surface);border-radius:8px;padding:3px;margin-bottom:20px}
@@ -301,7 +498,7 @@ a{color:var(--green);text-decoration:none}
 .login-ok.show{display:flex}
 .login-srv-status{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:5px}
 .srv-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.srv-dot.checking{background:#f59e0b;animation:pulse 1s infinite}
+.srv-dot.checking{background:#0284c7;animation:pulse 1s infinite}
 .srv-dot.ok{background:#22c55e}
 .srv-dot.fail{background:#ef4444}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
@@ -384,7 +581,7 @@ a{color:var(--green);text-decoration:none}
 .mdl.mdl-wide{width:560px}
 
 /*=== CUSTOM MODAL (prompt/confirm 대체) ===*/
-.mdl-back{position:fixed;inset:0;background:rgba(15,20,30,.5);backdrop-filter:blur(3px);z-index:99990;display:none;align-items:center;justify-content:center;animation:mdlIn .12s}
+.mdl-back{position:fixed;inset:0;background:rgba(15,20,30,.5);backdrop-filter:blur(3px);z-index:999999;display:none;align-items:center;justify-content:center;animation:mdlIn .12s}
 .mdl-back.open{display:flex}
 @keyframes mdlIn{from{opacity:0}to{opacity:1}}
 .mdl{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:440px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.25);overflow:hidden;animation:mdlPop .15s ease}
@@ -430,73 +627,284 @@ a{color:var(--green);text-decoration:none}
   </div>
 </div>
 
-<!-- ============ 랜딩 (마케팅 홈) ============ -->
+<!-- ============ 랜딩 (Supabase 스타일 · 라이트) ============ -->
 <div class="lnd-screen" id="lndScr">
+  <!-- Background -->
+  <div class="lnd-bg">
+    <div class="lnd-grid"></div>
+    <div class="lnd-orb lnd-orb1"></div>
+    <div class="lnd-orb lnd-orb2"></div>
+  </div>
+
+  <!-- Nav -->
   <nav class="lnd-nav">
     <div class="lnd-nav-logo">
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/></svg>
-      AOAO Cloud
+      <div class="lnd-nav-logo-mark">
+        <svg viewBox="0 0 40 40" width="30" height="30" class="lnd-logo-svg"><defs><linearGradient id="lnav" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".5" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="10" fill="url(#lnav)"/><path d="M11 29V11l9 10 9-10v18" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="30" cy="10" r="2.5" fill="#38bdf8"/></svg>
+      </div>
+      <span>MCloud</span>
     </div>
     <div class="lnd-nav-right">
+      <a href="#product" class="lnd-nav-link">제품</a>
       <a href="#features" class="lnd-nav-link">기능</a>
       <a href="#security" class="lnd-nav-link">보안</a>
-      <button class="lnd-btn lnd-btn-ghost" onclick="showScreen('login')">로그인</button>
-      <button class="lnd-btn lnd-btn-p" onclick="showScreen('login');switchLoginTab('register')">시작하기</button>
+      <a href="#templates" class="lnd-nav-link">템플릿</a>
+      <button class="lnd-btn lnd-btn-ghost" onclick="goLogin()">로그인</button>
+      <button class="lnd-btn lnd-btn-p" onclick="goLogin('register')">시작하기</button>
     </div>
   </nav>
 
+  <!-- HERO (Supabase 스타일 2컬럼 왼쪽 정렬) -->
   <section class="lnd-hero">
-    <div class="lnd-hero-badge">✨ 셀프 호스팅 클라우드 백엔드</div>
-    <h1 class="lnd-hero-title">주말 프로젝트를<br><span class="lnd-hero-grad">진짜 서비스</span>로 만드는 백엔드</h1>
-    <p class="lnd-hero-sub">데이터베이스 · 스토리지 · 서버리스 · 배포까지. API 하나로. 프론트 코드 몇 줄로.</p>
-    <div class="lnd-hero-cta">
-      <button class="lnd-btn lnd-btn-p lnd-btn-lg" onclick="showScreen('login');switchLoginTab('register')">무료로 시작 →</button>
-      <button class="lnd-btn lnd-btn-ghost lnd-btn-lg" onclick="showScreen('login')">로그인</button>
+    <div class="reveal lnd-hero-l">
+      <h1 class="lnd-title">
+        <span class="lnd-title-line"><span>주말에 만들고,</span></span>
+        <span class="lnd-title-line"><span class="lnd-title-grad">서비스로 키워라.</span></span>
+      </h1>
+      <div class="lnd-hero-cta">
+        <button class="lnd-btn lnd-btn-p lnd-btn-lg" onclick="goLogin('register')">프로젝트 시작하기</button>
+        <button class="lnd-btn lnd-btn-line lnd-btn-lg" onclick="scrollToSection('product')">둘러보기</button>
+      </div>
     </div>
-    <div class="lnd-hero-code">
-      <div class="lnd-code-bar"><span class="lnd-code-dot" style="background:#ff5f57"></span><span class="lnd-code-dot" style="background:#febc2e"></span><span class="lnd-code-dot" style="background:#28c840"></span><span class="lnd-code-title">quickstart.py</span></div>
-<pre class="lnd-code-body">from aoaocloud_client import AOAOCloud
-cloud = AOAOCloud("https://your-server", api_key="aoao_...")
-
-<span class="lnd-code-c"># SQL 그대로</span>
-cloud.s3.sql("CREATE TABLE users (id INTEGER PRIMARY KEY, name TEXT)")
-
-<span class="lnd-code-c"># Lambda 배포</span>
-cloud.lambda_fn.create("hello", "def handler(e): return 'hi ' + e['name']")
-
-<span class="lnd-code-c"># 정적 사이트 배포</span>
-cloud.lightsail.deploy_html("&lt;h1&gt;Hello&lt;/h1&gt;")</pre>
+    <div class="reveal lnd-hero-r">
+      <p class="lnd-sub">
+        SQLite 데이터베이스, RLS 인증, 서버리스 함수, 파일 스토리지, 정적 배포까지<br>
+        MCloud 하나면 백엔드 전부 해결. <b>내 노트북에서 도는 셀프 호스팅 백엔드.</b>
+      </p>
     </div>
   </section>
 
-  <section class="lnd-features" id="features">
-    <h2 class="lnd-sec-title">필요한 건 다 있어요</h2>
-    <div class="lnd-feat-grid">
-      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#22c55e20;color:#22c55e"><i data-lucide="database-zap"></i></div><h3>데이터베이스</h3><p>SQLite 기반 · SQL 에디터, 테이블 편집, RLS 정책까지</p></div>
-      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#3b82f620;color:#3b82f6"><i data-lucide="cloud"></i></div><h3>스토리지</h3><p>S3/EBS/CloudFront · 파일 저장 · CDN 서빙</p></div>
-      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#f59e0b20;color:#f59e0b"><i data-lucide="zap"></i></div><h3>Lambda</h3><p>Python 함수 서버리스 실행 · 이벤트로 트리거</p></div>
-      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#a855f720;color:#a855f7"><i data-lucide="terminal"></i></div><h3>EC2</h3><p>가상 셸 · 명령 실행 · AI 위험도 검사</p></div>
-      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#ec489920;color:#ec4899"><i data-lucide="rocket"></i></div><h3>Lightsail</h3><p>HTML 한번 업로드 → 공유 링크 즉시 생성</p></div>
-      <div class="lnd-feat"><div class="lnd-feat-ico" style="background:#06b6d420;color:#06b6d4"><i data-lucide="activity"></i></div><h3>CloudWatch</h3><p>실시간 요청 · 저장소 · 오류율 모니터링</p></div>
+  <!-- Trusted by -->
+  <section class="lnd-trust-band reveal">
+    <div class="lnd-trust-title">전 세계 개발자가 신뢰하는 도구들 위에</div>
+    <div class="lnd-trust-logos">
+      <div class="lnd-logo">SQLite</div>
+      <div class="lnd-logo">Python</div>
+      <div class="lnd-logo">Flask</div>
+      <div class="lnd-logo">ngrok</div>
+      <div class="lnd-logo">Render</div>
+      <div class="lnd-logo">Groq</div>
     </div>
   </section>
 
-  <section class="lnd-security" id="security">
-    <h2 class="lnd-sec-title">보안이 기본</h2>
-    <div class="lnd-sec-grid">
-      <div class="lnd-sec-item"><span class="lnd-check">✓</span> PBKDF2 200k 라운드 비밀번호 해싱</div>
-      <div class="lnd-sec-item"><span class="lnd-check">✓</span> anon · secret 키 자동 발급 (Supabase 스타일)</div>
-      <div class="lnd-sec-item"><span class="lnd-check">✓</span> Row-Level Security 정책 지원</div>
-      <div class="lnd-sec-item"><span class="lnd-check">✓</span> 유저별 물리적 DB 파일 격리</div>
-      <div class="lnd-sec-item"><span class="lnd-check">✓</span> Rate limit · 쿼리 타임아웃 · body 크기 제한</div>
-      <div class="lnd-sec-item"><span class="lnd-check">✓</span> 타이밍 공격 방지 · 상수시간 비교</div>
+  <!-- BIG FEATURE CARDS (Supabase 스타일 카드) -->
+  <section class="lnd-features" id="product">
+    <!-- Card 1: Database (큰 카드) -->
+    <div class="reveal lnd-fbig">
+      <div class="lnd-fbig-l">
+        <h3><i data-lucide="database-zap"></i> 데이터베이스</h3>
+        <p><b>모든 프로젝트에 SQLite DB</b>가 함께 옵니다. 가볍고 빠른 관계형 데이터베이스.</p>
+        <ul class="lnd-checks">
+          <li>100% 격리됨</li>
+          <li>Row-Level Security 내장</li>
+          <li>SQL 그대로 사용</li>
+        </ul>
+      </div>
+      <div class="lnd-fbig-r lnd-fbig-illus-db">
+        <svg viewBox="0 0 200 180" width="100%" style="max-width:220px">
+          <defs><linearGradient id="dbg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3b82f6" stop-opacity=".15"/><stop offset="1" stop-color="#3b82f6" stop-opacity=".05"/></linearGradient></defs>
+          <ellipse cx="100" cy="35" rx="70" ry="18" fill="url(#dbg)" stroke="#93c5fd" stroke-width="2"/>
+          <path d="M30 35v40c0 10 32 18 70 18s70-8 70-18V35" fill="url(#dbg)" stroke="#93c5fd" stroke-width="2"/>
+          <path d="M30 75v40c0 10 32 18 70 18s70-8 70-18V75" fill="url(#dbg)" stroke="#93c5fd" stroke-width="2"/>
+          <path d="M30 115v30c0 10 32 18 70 18s70-8 70-18v-30" fill="url(#dbg)" stroke="#93c5fd" stroke-width="2"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Card 2: Auth -->
+    <div class="reveal lnd-fmed">
+      <h3><i data-lucide="shield-check"></i> 인증</h3>
+      <p>API 키 기반 인증. Supabase 스타일 <b>anon · secret</b> 키 자동 발급.</p>
+      <div class="lnd-fmed-visual">
+        <div class="lnd-key-row"><span class="lnd-key-badge lnd-key-anon">anon</span><code>aoao_anon_9f2c8...</code></div>
+        <div class="lnd-key-row"><span class="lnd-key-badge lnd-key-secret">secret</span><code>••••••••••••</code></div>
+      </div>
+    </div>
+
+    <!-- Card 3: Lambda -->
+    <div class="reveal lnd-fmed">
+      <h3><i data-lucide="zap"></i> 서버리스 함수</h3>
+      <p>Python 함수 배포. 이벤트로 실행. <b>서버 관리 걱정 없음</b>.</p>
+      <div class="lnd-fmed-visual lnd-fmed-code">
+        <div class="lnd-code-mini"><span class="c-c">$ mcloud functions deploy</span></div>
+        <div class="lnd-code-mini lnd-code-ok">✓ greet ready in 340ms</div>
+      </div>
     </div>
   </section>
 
+  <!-- PRODUCT SHOWCASE (탭) -->
+  <section class="lnd-showcase reveal">
+    <h2 class="lnd-sec-title">대시보드에서 <span class="lnd-title-grad">앱을 관리</span>하세요</h2>
+    <p class="lnd-sec-sub">떠나지 않고, 브라우저 하나로. 통합 대시보드에서 데이터베이스·테이블·정책까지 다.</p>
+    <div class="lnd-tabs">
+      <button class="lnd-tab-btn active" onclick="lndShowTab(this,'sql')">SQL 에디터</button>
+      <button class="lnd-tab-btn" onclick="lndShowTab(this,'tbl')">테이블 에디터</button>
+      <button class="lnd-tab-btn" onclick="lndShowTab(this,'rls')">RLS 정책</button>
+    </div>
+    <div class="lnd-showcase-frame">
+      <div class="lnd-mock" data-tab="sql">
+        <div class="lnd-mock-head"><i></i><i></i><i></i><span>SQL Editor</span></div>
+        <div class="lnd-mock-body">
+<pre><span class="c-k">SELECT</span> u.name, <span class="c-k">COUNT</span>(o.id) <span class="c-k">AS</span> orders
+<span class="c-k">FROM</span> users u
+<span class="c-k">LEFT JOIN</span> orders o <span class="c-k">ON</span> o.user_id = u.id
+<span class="c-k">GROUP BY</span> u.name
+<span class="c-k">ORDER BY</span> orders <span class="c-k">DESC</span>
+<span class="c-k">LIMIT</span> 10;</pre>
+          <div class="lnd-mock-result">✓ 10행 · 4ms</div>
+        </div>
+      </div>
+      <div class="lnd-mock" data-tab="tbl" style="display:none">
+        <div class="lnd-mock-head"><i></i><i></i><i></i><span>Table Editor · users</span></div>
+        <div class="lnd-mock-body">
+          <table class="lnd-mock-tbl">
+            <tr><th>id 🔑</th><th>name</th><th>email</th><th>created_at</th></tr>
+            <tr><td>1</td><td>시그마</td><td>sigma@mcloud.dev</td><td>2026-01-15</td></tr>
+            <tr><td>2</td><td>alice</td><td>a@mcloud.dev</td><td>2026-01-15</td></tr>
+            <tr><td>3</td><td>bob</td><td>b@mcloud.dev</td><td>2026-01-16</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="lnd-mock" data-tab="rls" style="display:none">
+        <div class="lnd-mock-head"><i></i><i></i><i></i><span>RLS Policies</span></div>
+        <div class="lnd-mock-body">
+          <table class="lnd-mock-tbl">
+            <tr><th>테이블</th><th>API 키</th><th>읽기</th><th>쓰기</th></tr>
+            <tr><td>users</td><td>anon</td><td><span class="lnd-tag-ok">허용</span></td><td><span class="lnd-tag-no">차단</span></td></tr>
+            <tr><td>orders</td><td>*</td><td><span class="lnd-tag-ok">허용</span></td><td><span class="lnd-tag-no">차단</span></td></tr>
+            <tr><td>secrets</td><td>*</td><td><span class="lnd-tag-no">차단</span></td><td><span class="lnd-tag-no">차단</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FRAMEWORK CODE (탭) -->
+  <section class="lnd-fw reveal" id="features">
+    <div class="lnd-fw-l">
+      <h2 class="lnd-sec-title">어떤 언어든<br><span class="lnd-title-grad">몇 줄로 연결</span></h2>
+      <p class="lnd-sec-sub">Python · JavaScript · curl 무엇이든. HTTP 하나로 다 됩니다.</p>
+    </div>
+    <div class="lnd-fw-r">
+      <div class="lnd-fw-tabs">
+        <button class="lnd-fw-tab active" onclick="lndFwTab(this,'py')">🐍 Python</button>
+        <button class="lnd-fw-tab" onclick="lndFwTab(this,'js')">⚡ JavaScript</button>
+        <button class="lnd-fw-tab" onclick="lndFwTab(this,'curl')">📟 curl</button>
+      </div>
+      <div class="lnd-code">
+<pre class="lnd-code-body" data-fw="py"><span class="c-k">from</span> aoaocloud_client <span class="c-k">import</span> AOAOCloud
+
+cloud = AOAOCloud(<span class="c-s">"https://you.mcloud.dev"</span>, <span class="c-s">"aoao_..."</span>)
+
+<span class="c-c"># SQL 그대로</span>
+cloud.s3.sql(<span class="c-s">"CREATE TABLE items (id INTEGER, name TEXT)"</span>)
+
+<span class="c-c"># 서버리스 함수</span>
+cloud.lambda_fn.create(<span class="c-s">"hi"</span>, <span class="c-s">'def h(e): return "Hi " + e["n"]'</span>)
+r = cloud.lambda_fn.invoke(<span class="c-s">"hi"</span>, {<span class="c-s">"n"</span>: <span class="c-s">"world"</span>})</pre>
+<pre class="lnd-code-body" data-fw="js" style="display:none"><span class="c-k">const</span> API = <span class="c-s">"https://you.mcloud.dev"</span>
+<span class="c-k">const</span> KEY = <span class="c-s">"aoao_anon_..."</span>
+
+<span class="c-c">// 리더보드 조회 - RLS 자동 적용</span>
+<span class="c-k">const</span> r = <span class="c-k">await</span> fetch(<span class="c-s">`${API}/api/s3/sql`</span>, {
+  method: <span class="c-s">"POST"</span>,
+  headers: { <span class="c-s">"X-API-Key"</span>: KEY },
+  body: JSON.stringify({
+    query: <span class="c-s">"SELECT * FROM scores ORDER BY score DESC LIMIT 10"</span>
+  })
+}).then(r =&gt; r.json())</pre>
+<pre class="lnd-code-body" data-fw="curl" style="display:none"><span class="c-c"># 회원가입 → API 키 발급</span>
+curl -X POST https://you.mcloud.dev/api/auth/register \
+  -H <span class="c-s">"Content-Type: application/json"</span> \
+  -d <span class="c-s">'{"username":"me","password":"strongpass1"}'</span>
+
+<span class="c-c"># SQL 실행</span>
+curl -X POST https://you.mcloud.dev/api/s3/sql \
+  -H <span class="c-s">"X-API-Key: aoao_..."</span> \
+  -d <span class="c-s">'{"query":"SELECT * FROM users"}'</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- TEMPLATES -->
+  <section class="lnd-tpl" id="templates">
+    <div class="reveal lnd-tpl-head">
+      <div>
+        <h2 class="lnd-sec-title">바로 시작하는<br><span class="lnd-title-grad">준비된 템플릿</span></h2>
+        <p class="lnd-sec-sub">복붙만 하면 되는 실전 예제들.</p>
+      </div>
+      <a href="#" class="lnd-tpl-more">전체 보기 →</a>
+    </div>
+    <div class="lnd-tpl-grid">
+      <div class="reveal lnd-tpl-card">
+        <div class="lnd-tpl-badge">🎮</div>
+        <h4>실시간 리더보드</h4>
+        <p>SQL로 만드는 순위 시스템. anon 키로 읽기, 서버에서 쓰기.</p>
+        <div class="lnd-tpl-tags"><span>#SQL</span><span>#RLS</span></div>
+      </div>
+      <div class="reveal lnd-tpl-card">
+        <div class="lnd-tpl-badge">📸</div>
+        <h4>사진 공유 앱</h4>
+        <p>S3 업로드 · CloudFront 서빙 · 프론트에서 fetch만 하면 끝.</p>
+        <div class="lnd-tpl-tags"><span>#S3</span><span>#CDN</span></div>
+      </div>
+      <div class="reveal lnd-tpl-card">
+        <div class="lnd-tpl-badge">🤖</div>
+        <h4>Discord 봇 백엔드</h4>
+        <p>Lambda로 명령 처리 · SQLite로 유저 데이터 저장.</p>
+        <div class="lnd-tpl-tags"><span>#Lambda</span><span>#DB</span></div>
+      </div>
+      <div class="reveal lnd-tpl-card">
+        <div class="lnd-tpl-badge">💬</div>
+        <h4>익명 게시판</h4>
+        <p>단일 파일 HTML + anon 키 하나. 방문자별 격리는 RLS로.</p>
+        <div class="lnd-tpl-tags"><span>#Auth</span><span>#RLS</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTES (Supabase 인더스트리 리더 스타일) -->
+  <section class="lnd-quotes" id="security">
+    <div class="reveal lnd-sec-head">
+      <span class="lnd-eyebrow">개발자 이야기</span>
+      <h2 class="lnd-sec-title">MCloud로 <span class="lnd-title-grad">만든 작품들</span></h2>
+    </div>
+    <div class="lnd-q-grid">
+      <div class="reveal lnd-q lnd-q-big" style="background:linear-gradient(135deg,#38bdf8 0%,#3b82f6 45%,#1d4ed8 100%)">
+        <div class="lnd-q-mark">Medieval Realm Online</div>
+        <div class="lnd-q-tag">픽셀 MMORPG · 멀티플레이어</div>
+        <blockquote>
+          "SQLite 하나로 유저 데이터, 인벤토리, 하인 시스템, 미니게임 스코어까지 다 처리했어요.
+          RLS로 다른 유저 데이터를 못 건드리게 잠갔더니 치터가 사라졌습니다."
+        </blockquote>
+        <div class="lnd-q-author">— AOAO Studio</div>
+      </div>
+      <div class="reveal lnd-q lnd-q-side" style="background:linear-gradient(160deg,#60a5fa 0%,#2563eb 100%)"><div class="lnd-q-side-mark">ClassWorld</div></div>
+      <div class="reveal lnd-q lnd-q-side" style="background:linear-gradient(160deg,#22d3ee 0%,#0891b2 100%)"><div class="lnd-q-side-mark">PIXEL RIVALS</div></div>
+      <div class="reveal lnd-q lnd-q-side" style="background:linear-gradient(160deg,#1e40af 0%,#0f172a 100%)"><div class="lnd-q-side-mark">MCLAW</div></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="lnd-final reveal">
+    <div class="lnd-final-inner">
+      <h2>지금 만들기 시작하세요.</h2>
+      <p>계정 만드는데 30초. 무료입니다. 진짜로.</p>
+      <div class="lnd-cta">
+        <button class="lnd-btn lnd-btn-p lnd-btn-lg" onclick="goLogin('register')">프로젝트 시작하기</button>
+        <button class="lnd-btn lnd-btn-line lnd-btn-lg" onclick="goLogin()">기존 계정 로그인</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer class="lnd-foot">
-    <div>Made by <b>AOAO Studio</b> ☁️</div>
-    <div class="lnd-foot-links">
-      <button class="lnd-btn lnd-btn-p" onclick="showScreen('login');switchLoginTab('register')">지금 시작하기</button>
+    <div class="lnd-foot-l">
+      <div class="lnd-nav-logo"><div class="lnd-nav-logo-mark"><svg viewBox="0 0 40 40" width="22" height="22"><rect x="2" y="2" width="36" height="36" rx="10" fill="url(#lnav)"/><path d="M11 29V11l9 10 9-10v18" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="30" cy="10" r="2.5" fill="#38bdf8"/></svg></div><span>MCloud</span></div>
+      <p>Made by MCloud Studio ☁️ · 셀프 호스팅 백엔드 플랫폼</p>
+    </div>
+    <div class="lnd-foot-r">
+      <button class="lnd-btn lnd-btn-line" onclick="goLogin()">로그인</button>
     </div>
   </footer>
 </div>
@@ -504,7 +912,7 @@ cloud.lightsail.deploy_html("&lt;h1&gt;Hello&lt;/h1&gt;")</pre>
 <!-- ============ 프로젝트 목록 (로그인 후) ============ -->
 <div class="prj-screen" id="prjScr">
   <div class="prj-topbar">
-    <div class="tb-logo"><i data-lucide="cloud-lightning" style="width:18px;height:18px"></i> AOAO Cloud</div>
+    <div class="tb-logo"><i data-lucide="cloud-lightning" style="width:18px;height:18px"></i> MCloud</div>
     <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
       <div class="prj-user" id="prjUser">-</div>
       <button class="btn btn-s btn-sm" onclick="logout()"><i data-lucide="log-out"></i> 로그아웃</button>
@@ -526,11 +934,11 @@ cloud.lightsail.deploy_html("&lt;h1&gt;Hello&lt;/h1&gt;")</pre>
 <div class="login-screen" id="loginScr">
 <!-- 배경 blob -->
 <div class="login-bg-blob" style="width:400px;height:400px;background:#3b82f6;top:-100px;right:-80px"></div>
-<div class="login-bg-blob" style="width:300px;height:300px;background:#7c3aed;bottom:-80px;left:-60px"></div>
+<div class="login-bg-blob" style="width:300px;height:300px;background:#1e40af;bottom:-80px;left:-60px"></div>
 <div class="login-card">
   <div class="login-logo">
-    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/></svg>
-    AOAO Cloud
+    <div style="width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 24px -8px rgba(59,130,246,.55)"><svg viewBox="0 0 40 40" width="30" height="30"><defs><linearGradient id="llogo" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#38bdf8"/><stop offset=".5" stop-color="#3b82f6"/><stop offset="1" stop-color="#1d4ed8"/></linearGradient></defs><rect x="2" y="2" width="36" height="36" rx="10" fill="url(#llogo)"/><path d="M11 29V11l9 10 9-10v18" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="30" cy="10" r="2.5" fill="#38bdf8"/></svg></div>
+    <span style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">MCloud</span>
   </div>
   <div class="login-sub">셀프 호스팅 클라우드 플랫폼</div>
 
@@ -574,7 +982,7 @@ cloud.lightsail.deploy_html("&lt;h1&gt;Hello&lt;/h1&gt;")</pre>
 <div id="app">
 <!-- TOPBAR -->
 <div id="topbar">
-<div class="tb-logo" onclick="prjBack()" style="cursor:pointer" title="프로젝트 목록으로"><i data-lucide="cloud-lightning" style="width:18px;height:18px"></i> AOAO Cloud</div>
+<div class="tb-logo" onclick="prjBack()" style="cursor:pointer" title="프로젝트 목록으로"><i data-lucide="cloud-lightning" style="width:18px;height:18px"></i> MCloud</div>
 <div class="tb-sep"></div>
 <div class="tb-item" onclick="prjBack()" title="프로젝트 목록"><i data-lucide="arrow-left" style="width:13px;height:13px"></i> 프로젝트</div>
 <div class="tb-sep"></div>
@@ -1340,10 +1748,77 @@ async function checkSrvStatus() {
 // ============ 화면 전환 ============
 // 4개 화면: landing, login, projects, app
 function showScreen(name){
-  ['lndScr','loginScr','prjScr','app'].forEach(id=>$(id)?.classList.remove('show'));
   const map={landing:'lndScr',login:'loginScr',projects:'prjScr',app:'app'};
-  const el=$(map[name]);if(el)el.classList.add('show');
-  if(name==='projects')prjLoad();
+  const targetId=map[name];
+  // 현재 보이는 화면들 부드럽게 페이드아웃
+  const cur=['lndScr','loginScr','prjScr','app'].find(id=>$(id)?.classList.contains('show'));
+  if(cur===targetId)return;
+  if(cur){
+    const curEl=$(cur);
+    if(cur==='lndScr'){
+      curEl.classList.add('leaving');
+      setTimeout(()=>{curEl.classList.remove('show','leaving');_activate(targetId);},280);
+    } else {
+      curEl.classList.remove('show');
+      // 짧게 대기 후 새 화면
+      setTimeout(()=>_activate(targetId),50);
+    }
+  } else {
+    _activate(targetId);
+  }
+}
+function _activate(id){
+  $(id)?.classList.add('show');
+  if(id==='prjScr')prjLoad();
+  if(id==='lndScr')setTimeout(lndInitReveal,50);
+}
+
+// 랜딩 → 로그인 (부드러운 전환)
+function goLogin(mode){
+  showScreen('login');
+  if(mode==='register')setTimeout(()=>switchLoginTab('register'),100);
+  else setTimeout(()=>switchLoginTab('login'),100);
+}
+function scrollToSection(id){
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// 랜딩 코드 탭 (프레임워크 탭)
+function lndFwTab(el,fw){
+  el.parentElement.querySelectorAll('.lnd-fw-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.lnd-fw .lnd-code-body').forEach(b=>{
+    b.style.display=(b.dataset.fw===fw)?'':'none';
+  });
+}
+// 제품 쇼케이스 탭 (SQL/테이블/RLS)
+function lndShowTab(el,tab){
+  el.parentElement.querySelectorAll('.lnd-tab-btn').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.lnd-mock').forEach(b=>{
+    b.style.display=(b.dataset.tab===tab)?'':'none';
+  });
+}
+
+// 스크롤 트리거 애니메이션
+let _revealObs=null;
+function lndInitReveal(){
+  if(_revealObs)_revealObs.disconnect();
+  _revealObs=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');_revealObs.unobserve(e.target);}});
+  },{threshold:.12,rootMargin:'0px 0px -50px 0px'});
+  document.querySelectorAll('#lndScr .reveal').forEach(el=>_revealObs.observe(el));
+
+  // Nav 스크롤 시 shrink
+  const lndScr=$('lndScr');
+  const nav=lndScr?.querySelector('.lnd-nav');
+  if(lndScr && nav && !lndScr._navScrollBound){
+    lndScr._navScrollBound=true;
+    lndScr.addEventListener('scroll',()=>{
+      nav.classList.toggle('scrolled', lndScr.scrollTop>20);
+    });
+  }
 }
 
 function onAuth(){
@@ -1354,7 +1829,7 @@ function onAuth(){
   $('keyEx').textContent=`curl -H "X-API-Key: ${K}" ${B}/api/cloudwatch/summary\n\n# Python\nfrom aoaocloud_client import AOAOCloud\ncloud = AOAOCloud("${B}", "${K}")\nprint(cloud.cloudwatch.summary())`;
   localStorage.setItem('ak',K);localStorage.setItem('au',U);localStorage.setItem('ab',B);
   renderIcons();startAliveCheck();
-  showScreen('projects');  // 로그인 후엔 프로젝트 목록으로
+  showScreen('projects');
 }
 function logout(){localStorage.clear();K='';U='';location.reload();}
 
@@ -1363,15 +1838,17 @@ async function prjLoad(){
   const el=$('prjGrid');el.innerHTML='<div class="empty">로딩 중...</div>';
   const r=await api('GET','/api/projects');
   if(r.error){el.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">${esc(r.error)}</div>`;return;}
+  // JS 문자열 리터럴로 안전하게 인코딩 (HTML attr에 넣을 때 &quot; 로 escape)
+  const q=v=>JSON.stringify(String(v)).replace(/"/g,'&quot;');
   const cards=r.projects.map(p=>{
     const initial=(p.name||'?')[0].toUpperCase();
     const created=(p.created_at||'').split(' ')[0];
-    return `<div class="prj-card" onclick="prjEnter(${JSON.stringify(p.id)},${JSON.stringify(p.name)})">
-      <button class="prj-card-del" onclick="event.stopPropagation();prjDel(${JSON.stringify(p.id)},${JSON.stringify(p.name)})" title="삭제"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
+    return `<div class="prj-card" onclick="prjEnter(${q(p.id)},${q(p.name)})">
+      <button class="prj-card-del" onclick="event.stopPropagation();prjDel(${q(p.id)},${q(p.name)})" title="삭제"><i data-lucide="trash-2" style="width:14px;height:14px"></i></button>
       <div class="prj-card-icon">${esc(initial)}</div>
       <h3>${esc(p.name)}</h3>
       <div class="prj-card-desc">${esc(p.description||'설명 없음')}</div>
-      <div class="prj-card-meta"><span>📍 ${esc(p.region||'서울')}</span><span>${esc(created)}</span></div>
+      <div class="prj-card-meta"><span>${esc(created)}</span></div>
     </div>`;
   }).join('');
   const newCard=`<div class="prj-card prj-card-new" onclick="prjNew()">
@@ -1474,7 +1951,7 @@ function saveProjs(){localStorage.setItem('curp_'+U,CUR_PROJ);}
 function renderProjs(){
   const cur=PROJS.find(p=>p.id===CUR_PROJ);
   $('projLabel').textContent=cur?.name||'Default';
-  $('projList').innerHTML=PROJS.map(p=>`<div class="proj-dd-item ${p.id===CUR_PROJ?'active':''}" onclick="switchProj(${JSON.stringify(p.id)})">${esc(p.name)}${p.id===CUR_PROJ?' ✓':''}</div>`).join('');
+  $('projList').innerHTML=PROJS.map(p=>`<div class="proj-dd-item ${p.id===CUR_PROJ?'active':''}" onclick="switchProj(${JSON.stringify(p.id).replace(/"/g,'&quot;')})">${esc(p.name)}${p.id===CUR_PROJ?' ✓':''}</div>`).join('');
 }
 function switchProj(id){
   const p=PROJS.find(x=>x.id===id);if(!p)return;
@@ -1842,7 +2319,7 @@ async function dbTblLoad(){
   if(!r.tables?.length){el.innerHTML='<div class="empty">테이블이 없습니다. SQL 에디터에서 <code>CREATE TABLE</code>을 실행하세요.</div>';return;}
   el.innerHTML=`<table class="tbl"><tr><th>이름</th><th>행 개수</th><th></th></tr>${r.tables.map(t=>`
     <tr><td><strong>${esc(t.name)}</strong></td><td class="mono">${t.rows|0}</td>
-    <td style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="dbTblOpen(${JSON.stringify(t.name)})"><i data-lucide="pencil"></i> 편집</button></td></tr>
+    <td style="display:flex;gap:6px"><button class="btn btn-p btn-sm" onclick="dbTblOpen(${JSON.stringify(t.name).replace(/"/g,'&quot;')})"><i data-lucide="pencil"></i> 편집</button></td></tr>
   `).join('')}</table>`;renderIcons();
 }
 async function dbTblOpen(name){
@@ -1864,7 +2341,7 @@ async function dbTblOpen(name){
     const v=row[c];
     const disp=v===null?'<span class="db-null">NULL</span>':esc(v);
     return `<td class="db-editable" contenteditable="true" data-col="${esc(c)}" data-pk="${esc(row[_dbCurPk])}" data-orig="${v===null?'':esc(v)}" onblur="dbCellEdit(this)">${disp}</td>`;
-  }).join('')}<td><button class="btn btn-d btn-sm" onclick="dbRowDel(${JSON.stringify(String(row[_dbCurPk]))})"><i data-lucide="trash-2"></i></button></td></tr>`).join('')}
+  }).join('')}<td><button class="btn btn-d btn-sm" onclick="dbRowDel(${JSON.stringify(String(row[_dbCurPk])).replace(/"/g,'&quot;')})"><i data-lucide="trash-2"></i></button></td></tr>`).join('')}
   </table>${rows.length===0?'<div class="empty">빈 테이블</div>':''}`;
   $('dbTblEditEl').innerHTML=html;renderIcons();
 }
@@ -2006,7 +2483,7 @@ async function keyList(){
     <td>${tagFor(k.key_type||'user')}</td>
     <td>${esc(k.name||'-')}</td>
     <td class="mono">${esc(k.key.substring(0,20))}...</td>
-    <td>${k.key===K?'<span class="tag tag-g">현재</span>':(k.key_type==='anon'||k.key_type==='secret')?'<span style="color:var(--text3);font-size:11px">시스템</span>':`<button class="btn btn-d btn-sm" onclick="delKey(${JSON.stringify(k.key)})">삭제</button>`}</td>
+    <td>${k.key===K?'<span class="tag tag-g">현재</span>':(k.key_type==='anon'||k.key_type==='secret')?'<span style="color:var(--text3);font-size:11px">시스템</span>':`<button class="btn btn-d btn-sm" onclick="delKey(${JSON.stringify(k.key).replace(/"/g,'&quot;')})">삭제</button>`}</td>
   </tr>`).join('')}</table>`;
 }
 async function delKey(k){if(!await customConfirm('삭제 확인','정말 삭제할까요?',{okText:'삭제',danger:true}))return;const r=await api('DELETE','/api/auth/keys/'+encodeURIComponent(k));if(r.error)return toast(r.error,0);toast('삭제됨');keyList();}
@@ -2066,7 +2543,7 @@ async function aiSQL(){
   }
   if(!r.sql){
     const e=$('sqlRes');
-    e.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">응답에 sql 필드 없음: ${JSON.stringify(r)}</div>`;
+    e.innerHTML=`<div class="code" style="border-left:2px solid var(--red)">응답에 sql 필드 없음: ${JSON.stringify(r).replace(/"/g,'&quot;')}</div>`;
     toast('AI SQL 응답 오류',0);
     return;
   }
