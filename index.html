@@ -31,9 +31,9 @@ a{color:var(--green);text-decoration:none}
 #body-row{display:flex;flex:1;min-height:0;overflow:hidden}
 #sidebar{width:48px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 4px;gap:2px;flex-shrink:0;overflow-y:auto;overflow-x:hidden}
 #page-area{flex:1;display:flex;min-width:0;min-height:0;overflow:hidden}  /* both min-0 for nested flex scroll */
-.inner-sb{width:240px;background:var(--bg2);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
+.inner-sb{width:260px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 0 32px;overflow-y:auto;flex-shrink:0}
 .page-content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0;padding-right:2px}  /* THIS is what scrolls */
-.page-inner{max-width:1280px;margin:0 auto;padding:28px 36px 60px}
+.page-inner{max-width:1280px;margin:0 auto;padding:40px 48px 80px}
 
 /* Scrollbar with proper spacing so it doesn't touch edges */
 ::-webkit-scrollbar{width:8px;height:8px}
@@ -68,23 +68,23 @@ a{color:var(--green);text-decoration:none}
 .sb-spacer{flex:1}
 
 /*=== INNER SIDEBAR ===*/
-.is-title{padding:0 20px 12px;font-size:15px;font-weight:700}
-.is-section{padding:12px 20px 5px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
-.is-item{padding:7px 20px;font-size:13px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:10px;border-left:2px solid transparent}
+.is-title{padding:4px 24px 20px;font-size:16px;font-weight:700;letter-spacing:-.2px}
+.is-section{padding:20px 24px 8px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;font-weight:600}
+.is-item{padding:11px 24px;margin:2px 8px;border-radius:7px;font-size:13.5px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:12px;border-left:2px solid transparent;transition:.12s}
 .is-item:hover{color:var(--text);background:var(--hover)}
-.is-item.active{color:var(--green);background:var(--green-a);border-left-color:var(--green)}
-.is-item svg{width:15px;height:15px}
+.is-item.active{color:var(--green);background:var(--green-a);border-left-color:var(--green);font-weight:600}
+.is-item svg{width:16px;height:16px;flex-shrink:0}
 
 /*=== PAGE HEADER ===*/
-.ph{margin-bottom:24px}
-.ph h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
-.ph p{font-size:13px;color:var(--text2);margin-top:4px}
+.ph{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.ph h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
+.ph p{font-size:14px;color:var(--text2);margin-top:6px}
 
 /*=== CARDS ===*/
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:16px}
-.card-h{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
-.card-h h3{font-size:14px;font-weight:600;flex:1}
-.card-b{padding:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:20px}
+.card-h{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;min-height:60px}
+.card-h h3{font-size:15px;font-weight:600;flex:1;letter-spacing:-.2px}
+.card-b{padding:24px}
 
 /*=== STAT GRID ===*/
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
@@ -197,7 +197,10 @@ a{color:var(--green);text-decoration:none}
 @keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
 
 /*=== EMPTY ===*/
-.empty{padding:40px;text-align:center;color:var(--text3);font-size:13px}
+.empty{padding:56px 24px;text-align:center;color:var(--text3);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty::before{content:'';display:block;width:44px;height:44px;border-radius:12px;background:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%239ca0a6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M22 12h-4l-3 9L9 3l-3 9H2'/></svg>");background-repeat:no-repeat;background-position:center}
+.empty.compact{padding:24px;flex-direction:row;gap:8px}
+.empty.compact::before{width:20px;height:20px;background-size:14px}
 
 /*=== BANNER ===*/
 .banner{background:var(--green-a);border:1px solid rgba(62,207,142,.25);border-radius:8px;padding:12px 16px;font-size:13px;display:flex;gap:8px;margin-bottom:14px;line-height:1.5}
@@ -1119,7 +1122,7 @@ curl -X POST https://you.mcloud.dev/api/s3/sql \
 </div>
 <div class="page-content"><div class="page-inner">
 <div class="ph"><h1>Lambda</h1><p>Python 함수 서버리스 실행</p></div>
-<div data-panel="lam-list" class="show"><div class="card"><div class="card-h"><h3>함수 목록</h3><button class="btn btn-s btn-sm" onclick="lamList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b" id="lamListEl"></div></div></div>
+<div data-panel="lam-list" class="show"><div class="card"><div class="card-h"><h3>함수 목록</h3><button class="btn btn-p btn-sm" onclick="sp('lam-new',document.querySelectorAll('#pg-lambda .is-item')[1])"><i data-lucide="plus"></i> 새 함수</button><button class="btn btn-s btn-sm" onclick="lamList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b" id="lamListEl"><div class="empty">아직 함수가 없습니다<br><span style="font-size:12px;color:var(--dim)">우측 상단 <b>새 함수</b>를 눌러 첫 Python 함수를 배포하세요</span></div></div></div></div>
 <div data-panel="lam-new"><div class="card"><div class="card-h"><h3>새 Lambda 함수</h3></div><div class="card-b">
 <div class="field"><label>함수 이름</label><input class="inp" id="lamName" placeholder="my_function"></div>
 <div class="field"><label>코드</label><textarea class="inp ta" id="lamCode" rows="10" placeholder="def handler(event):&#10;    return event['a'] + event['b']"></textarea></div>
@@ -1928,6 +1931,9 @@ function nav(id,el){
   if(el)el.classList.add('active');
   if(id==='dash')loadDash();
   if(id==='keys'){specialKeys();keyList();}
+  // Auto-load first panel so pages aren't empty
+  const autoLoad={ec2:ec2List,lambda:lamList,s3:s3Bkts,database:dbTblLoad,storage:ebsList,deploy:lsList,security:()=>{},cloudwatch:cwSum,users:loadUsers,docs:()=>{}};
+  if(autoLoad[id]){try{autoLoad[id]();}catch(e){}}
   renderIcons();
 }
 function sp(panel,el){
@@ -2121,7 +2127,7 @@ async function _ec2Run(id,cmd,b,force){
 
 // ===== LAMBDA =====
 async function lamCreate(){const r=await api('POST','/api/lambda/functions',{name:V('lamName'),code:$('lamCode').value});if(r.error)return toast(r.error,0);toast('생성: '+r.name);lamList();}
-async function lamList(){const r=await api('GET','/api/lambda/functions');$('lamListEl').innerHTML=r.functions?.length?`<table class="tbl"><tr><th>이름</th><th>런타임</th><th></th></tr>${r.functions.map(f=>`<tr><td class="mono">${f.name}</td><td>${f.runtime}</td><td style="display:flex;gap:4px"><button class="btn btn-s btn-sm" onclick="lamEdit('${f.name}')">편집</button><button class="btn btn-p btn-sm" onclick="$('lamRunName').value='${f.name}';sp('lam-run',document.querySelectorAll('#pg-lambda .is-item')[2])">실행</button></td></tr>`).join('')}</table>`:'<div class="empty">없음</div>';}
+async function lamList(){const r=await api('GET','/api/lambda/functions');$('lamListEl').innerHTML=r.functions?.length?`<table class="tbl"><tr><th>이름</th><th>런타임</th><th></th></tr>${r.functions.map(f=>`<tr><td class="mono">${f.name}</td><td>${f.runtime}</td><td style="display:flex;gap:4px"><button class="btn btn-s btn-sm" onclick="lamEdit('${f.name}')">편집</button><button class="btn btn-p btn-sm" onclick="$('lamRunName').value='${f.name}';sp('lam-run',document.querySelectorAll('#pg-lambda .is-item')[2])">실행</button></td></tr>`).join('')}</table>`:'<div class="empty">아직 함수가 없습니다<br><span style="font-size:12px;color:var(--dim)">우측 상단 <b>새 함수</b>를 눌러 첫 Python 함수를 배포하세요</span></div>';}
 async function lamEdit(name){
   const r=await api('GET','/api/lambda/functions');
   const fn=(r.functions||[]).find(f=>f.name===name);
