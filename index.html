@@ -31,9 +31,9 @@ a{color:var(--green);text-decoration:none}
 #body-row{display:flex;flex:1;min-height:0;overflow:hidden}
 #sidebar{width:48px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;padding:8px 4px;gap:2px;flex-shrink:0;overflow-y:auto;overflow-x:hidden}
 #page-area{flex:1;display:flex;min-width:0;min-height:0;overflow:hidden}  /* both min-0 for nested flex scroll */
-.inner-sb{width:260px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 0 32px;overflow-y:auto;flex-shrink:0}
+.inner-sb{width:240px;background:var(--bg2);border-right:1px solid var(--border);padding:16px 0;overflow-y:auto;flex-shrink:0}
 .page-content{flex:1;overflow-y:auto;overflow-x:hidden;min-width:0;padding-right:2px}  /* THIS is what scrolls */
-.page-inner{max-width:1280px;margin:0 auto;padding:40px 48px 80px}
+.page-inner{max-width:1280px;margin:0 auto;padding:28px 36px 60px}
 
 /* Scrollbar with proper spacing so it doesn't touch edges */
 ::-webkit-scrollbar{width:8px;height:8px}
@@ -68,23 +68,23 @@ a{color:var(--green);text-decoration:none}
 .sb-spacer{flex:1}
 
 /*=== INNER SIDEBAR ===*/
-.is-title{padding:4px 24px 20px;font-size:16px;font-weight:700;letter-spacing:-.2px}
-.is-section{padding:20px 24px 8px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;font-weight:600}
-.is-item{padding:11px 24px;margin:2px 8px;border-radius:7px;font-size:13.5px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:12px;border-left:2px solid transparent;transition:.12s}
+.is-title{padding:0 20px 12px;font-size:15px;font-weight:700}
+.is-section{padding:12px 20px 5px;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;font-weight:600}
+.is-item{padding:7px 20px;font-size:13px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:10px;border-left:2px solid transparent}
 .is-item:hover{color:var(--text);background:var(--hover)}
-.is-item.active{color:var(--green);background:var(--green-a);border-left-color:var(--green);font-weight:600}
-.is-item svg{width:16px;height:16px;flex-shrink:0}
+.is-item.active{color:var(--green);background:var(--green-a);border-left-color:var(--green)}
+.is-item svg{width:15px;height:15px}
 
 /*=== PAGE HEADER ===*/
-.ph{margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
-.ph h1{font-size:26px;font-weight:700;letter-spacing:-.5px}
-.ph p{font-size:14px;color:var(--text2);margin-top:6px}
+.ph{margin-bottom:24px}
+.ph h1{font-size:22px;font-weight:700;letter-spacing:-.3px}
+.ph p{font-size:13px;color:var(--text2);margin-top:4px}
 
 /*=== CARDS ===*/
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:20px}
-.card-h{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;min-height:60px}
-.card-h h3{font-size:15px;font-weight:600;flex:1;letter-spacing:-.2px}
-.card-b{padding:24px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:16px}
+.card-h{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.card-h h3{font-size:14px;font-weight:600;flex:1}
+.card-b{padding:20px}
 
 /*=== STAT GRID ===*/
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px}
@@ -197,10 +197,7 @@ a{color:var(--green);text-decoration:none}
 @keyframes tIn{from{transform:translateX(16px);opacity:0}to{transform:translateX(0);opacity:1}}
 
 /*=== EMPTY ===*/
-.empty{padding:56px 24px;text-align:center;color:var(--text3);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:10px}
-.empty::before{content:'';display:block;width:44px;height:44px;border-radius:12px;background:var(--surface);background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%239ca0a6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M22 12h-4l-3 9L9 3l-3 9H2'/></svg>");background-repeat:no-repeat;background-position:center}
-.empty.compact{padding:24px;flex-direction:row;gap:8px}
-.empty.compact::before{width:20px;height:20px;background-size:14px}
+.empty{padding:40px;text-align:center;color:var(--text3);font-size:13px}
 
 /*=== BANNER ===*/
 .banner{background:var(--green-a);border:1px solid rgba(62,207,142,.25);border-radius:8px;padding:12px 16px;font-size:13px;display:flex;gap:8px;margin-bottom:14px;line-height:1.5}
@@ -1014,12 +1011,9 @@ curl -X POST https://you.mcloud.dev/api/s3/sql \
 <!-- ICON SIDEBAR -->
 <div id="sidebar">
 <div class="sb-btn active" onclick="nav('dash',this)"><i data-lucide="layout-dashboard"></i><span class="sb-tip">대시보드</span></div>
-<div class="sb-btn" onclick="nav('ec2',this)"><i data-lucide="monitor"></i><span class="sb-tip">EC2</span></div>
-<div class="sb-btn" onclick="nav('lambda',this)"><i data-lucide="zap"></i><span class="sb-tip">Lambda</span></div>
-<div class="sb-btn" onclick="nav('s3',this)"><i data-lucide="database"></i><span class="sb-tip">S3</span></div>
 <div class="sb-btn" onclick="nav('database',this)"><i data-lucide="database-zap"></i><span class="sb-tip">데이터베이스</span></div>
+<div class="sb-btn" onclick="nav('s3',this)"><i data-lucide="database"></i><span class="sb-tip">S3</span></div>
 <div class="sb-btn" onclick="nav('storage',this)"><i data-lucide="hard-drive"></i><span class="sb-tip">스토리지</span></div>
-<div class="sb-btn" onclick="nav('deploy',this)"><i data-lucide="rocket"></i><span class="sb-tip">배포</span></div>
 <div class="sb-btn" onclick="nav('security',this)"><i data-lucide="shield"></i><span class="sb-tip">보안</span></div>
 <div class="sb-btn" onclick="nav('watch',this)"><i data-lucide="bar-chart-3"></i><span class="sb-tip">CloudWatch</span></div>
 <div class="sb-btn" onclick="nav('keys',this)"><i data-lucide="key"></i><span class="sb-tip">API Keys</span></div>
@@ -1058,84 +1052,6 @@ curl -X POST https://you.mcloud.dev/api/s3/sql \
 </div>
 
 <!-- ======= EC2 ======= -->
-<div id="pg-ec2" class="pg-with-sb">
-<div class="inner-sb">
-<div class="is-title">EC2</div>
-<div class="is-section">관리</div>
-<div class="is-item active" onclick="sp('ec2-list',this)"><i data-lucide="monitor"></i> 인스턴스</div>
-<div class="is-item" onclick="sp('ec2-term',this);ec2TermTabSwitch('tab-ec2-term',document.querySelector('[data-ec2tab=ec2-terminal]'))"><i data-lucide="terminal"></i> 터미널</div>
-<div class="is-item" onclick="sp('ec2-term',this);ec2TermTabSwitch('tab-ec2-files',document.querySelector('[data-ec2tab=ec2-files]'))"><i data-lucide="folder-open"></i> 파일 브라우저</div>
-<div class="is-item" onclick="sp('ec2-term',this);ec2TermTabSwitch('tab-ec2-hist',document.querySelector('[data-ec2tab=ec2-hist]'))"><i data-lucide="history"></i> 실행 히스토리</div>
-</div>
-<div class="page-content"><div class="page-inner">
-<div class="ph"><h1>EC2</h1><p>가상 인스턴스 + CMD 명령어 실행</p></div>
-<div data-panel="ec2-list" class="show">
-<div class="card"><div class="card-h"><h3>인스턴스</h3><button class="btn btn-s btn-sm" onclick="ec2List()"><i data-lucide="refresh-cw"></i> 새로고침</button></div>
-<div class="card-b">
-<div class="field-row"><div class="field"><label>이름</label><input class="inp" id="ec2Name" placeholder="my-server"></div>
-<button class="btn btn-p" onclick="ec2Create()"><i data-lucide="plus"></i> 생성</button></div>
-<div id="ec2ListEl" style="margin-top:12px"></div>
-</div></div>
-</div>
-<div data-panel="ec2-term">
-<div class="field"><label>인스턴스 ID</label><input class="inp" id="ec2TermId" placeholder="i-xxxx (인스턴스 목록에서 복사)" oninput="ec2TermTabSwitch('tab-ec2-term',document.querySelector('[data-ec2tab=ec2-terminal]'))"></div>
-<div class="tabs" style="margin-top:10px">
-  <div class="tab active" data-ec2tab="ec2-terminal" onclick="ec2TermTabSwitch('tab-ec2-term',this)">터미널</div>
-  <div class="tab" data-ec2tab="ec2-files" onclick="ec2TermTabSwitch('tab-ec2-files',this)">파일 브라우저</div>
-  <div class="tab" data-ec2tab="ec2-hist" onclick="ec2TermTabSwitch('tab-ec2-hist',this)">히스토리</div>
-</div>
-<div id="tab-ec2-term">
-<div class="card" style="margin-bottom:0"><div class="card-h"><h3>터미널</h3><span style="color:var(--text3);font-size:11px" id="termLabel">인스턴스를 선택하세요</span></div>
-<div class="card-b" style="padding:0">
-<div class="term" style="border:none;border-radius:0">
-<div class="term-bar"><div class="term-dot" style="background:var(--red)"></div><div class="term-dot" style="background:var(--yellow)"></div><div class="term-dot" style="background:var(--green)"></div></div>
-<div class="term-body" id="termBody">$ 명령어를 입력하세요</div>
-<div class="term-in"><span>$</span><input id="termCmd" placeholder="echo hello" onkeydown="ec2TermKeydown(event)"></div>
-</div>
-<div style="font-size:10px;color:var(--text3);padding:6px 12px 8px">⚠ format, del /f, shutdown, rm -rf 등 위험 명령 자동 차단 | ↑↓ 히스토리</div>
-</div></div>
-</div>
-<div id="tab-ec2-files" style="display:none">
-<div class="card" style="margin-bottom:0"><div class="card-h"><h3>파일 브라우저</h3>
-<button class="btn btn-s btn-sm" onclick="ec2FilesList()"><i data-lucide="refresh-cw"></i></button>
-<label class="btn btn-p btn-sm" style="cursor:pointer"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg> 업로드<input type="file" id="ec2UpFile" style="display:none" onchange="ec2FileUpload()"></label>
-</div>
-<div class="card-b" id="ec2FilesEl"><div class="empty">인스턴스 ID 입력 후 새로고침</div></div>
-</div>
-</div>
-<div id="tab-ec2-hist" style="display:none">
-<div class="card" style="margin-bottom:0"><div class="card-h"><h3>명령어 히스토리</h3><button class="btn btn-s btn-sm" onclick="ec2HistLoad()"><i data-lucide="refresh-cw"></i></button></div>
-<div class="card-b" id="ec2HistEl"><div class="empty">새로고침 클릭</div></div>
-</div>
-</div>
-</div>
-</div></div>
-</div>
-
-<!-- ======= LAMBDA ======= -->
-<div id="pg-lambda" class="pg-with-sb">
-<div class="inner-sb">
-<div class="is-title">Lambda</div>
-<div class="is-item active" onclick="sp('lam-list',this)"><i data-lucide="list"></i> 함수 목록</div>
-<div class="is-item" onclick="sp('lam-new',this)"><i data-lucide="plus"></i> 새 함수</div>
-<div class="is-item" onclick="sp('lam-run',this)"><i data-lucide="play"></i> 실행</div>
-</div>
-<div class="page-content"><div class="page-inner">
-<div class="ph"><h1>Lambda</h1><p>Python 함수 서버리스 실행</p></div>
-<div data-panel="lam-list" class="show"><div class="card"><div class="card-h"><h3>함수 목록</h3><button class="btn btn-p btn-sm" onclick="sp('lam-new',document.querySelectorAll('#pg-lambda .is-item')[1])"><i data-lucide="plus"></i> 새 함수</button><button class="btn btn-s btn-sm" onclick="lamList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b" id="lamListEl"><div class="empty">아직 함수가 없습니다<br><span style="font-size:12px;color:var(--dim)">우측 상단 <b>새 함수</b>를 눌러 첫 Python 함수를 배포하세요</span></div></div></div></div>
-<div data-panel="lam-new"><div class="card"><div class="card-h"><h3>새 Lambda 함수</h3></div><div class="card-b">
-<div class="field"><label>함수 이름</label><input class="inp" id="lamName" placeholder="my_function"></div>
-<div class="field"><label>코드</label><textarea class="inp ta" id="lamCode" rows="10" placeholder="def handler(event):&#10;    return event['a'] + event['b']"></textarea></div>
-<button class="btn btn-p" onclick="lamCreate()"><i data-lucide="plus"></i> 생성</button>
-</div></div></div>
-<div data-panel="lam-run"><div class="card"><div class="card-h"><h3>함수 실행</h3></div><div class="card-b">
-<div class="field"><label>함수 이름</label><input class="inp" id="lamRunName" placeholder="my_function"></div>
-<div class="field"><label>Input (JSON)</label><textarea class="inp ta" id="lamRunInput" rows="4" placeholder='{"a":10,"b":20}'></textarea></div>
-<button class="btn btn-p" onclick="lamInvoke()"><i data-lucide="play"></i> 실행</button>
-<div class="code" id="lamResult" style="margin-top:10px;display:none"></div>
-</div></div></div>
-</div></div>
-</div>
 
 <!-- ======= S3 ======= -->
 <div id="pg-s3" class="pg-with-sb">
@@ -1189,14 +1105,6 @@ curl -X POST https://you.mcloud.dev/api/s3/sql \
 
 <!-- === SQL EDITOR === -->
 <div data-panel="db-sql" class="show">
-<div class="card"><div class="card-h"><h3>🤖 AI SQL 도우미</h3></div><div class="card-b">
-<div class="field-row">
-<div class="field"><label>한국어로 원하는 쿼리 설명</label><input class="inp" id="aiPrompt" placeholder="예: 유저 테이블 만들고 3명 넣어줘, 가격 높은 순 정렬해줘"></div>
-<button class="btn btn-p" onclick="aiSQL()"><i data-lucide="zap"></i> AI 생성</button>
-</div>
-<div style="font-size:11px;color:var(--text3);margin-top:4px">Groq AI가 자연어를 SQL로 변환합니다. <code style="background:var(--surface);padding:1px 4px;border-radius:3px;font-family:var(--mono);font-size:10px">GROQ_API_KEY</code>가 서버에 설정되어야 함.</div>
-</div></div>
-
 <div class="card"><div class="card-h"><h3>쿼리</h3><button class="btn btn-p btn-sm" onclick="sqlRun()"><i data-lucide="play"></i> 실행 (Ctrl+Enter)</button></div><div class="card-b">
 <div class="sql-box"><div class="sql-bar"><span style="font-size:10px;color:var(--text3);font-family:var(--mono)">SQL</span>
 <button class="btn btn-g btn-sm" style="margin-left:auto" onclick="$('sqlTA').value=SQLEX.create">테이블 예시</button>
@@ -1271,13 +1179,10 @@ curl -X POST https://you.mcloud.dev/api/s3/sql \
 <div class="is-title">스토리지</div>
 <div class="is-item active" onclick="sp('sto-ebs',this)"><i data-lucide="hard-drive"></i> EBS</div>
 <div class="is-item" onclick="sp('sto-cf',this)"><i data-lucide="cloud"></i> CloudFront</div>
-<div class="is-item" onclick="sp('sto-cfn',this)"><i data-lucide="clock"></i> CloudFormation</div>
 <div class="is-item" onclick="sp('sto-ws',this)"><i data-lucide="folder"></i> WorkSpaces</div>
-<div class="is-item" onclick="sp('sto-kin',this)"><i data-lucide="file-search"></i> Kinesis</div>
-<div class="is-item" onclick="sp('sto-emr',this)"><i data-lucide="box"></i> EMR</div>
 </div>
 <div class="page-content"><div class="page-inner">
-<div class="ph"><h1>스토리지</h1><p>EBS, CloudFront, CloudFormation, WorkSpaces, Kinesis, EMR</p></div>
+<div class="ph"><h1>스토리지</h1><p>EBS, CloudFront, WorkSpaces</p></div>
 <div data-panel="sto-ebs" class="show"><div class="card"><div class="card-h"><h3>EBS - 압축 저장</h3></div><div class="card-b">
 <div class="field-row"><div class="field"><label>볼륨 이름</label><input class="inp" id="ebsName" placeholder="data-vol"></div><button class="btn btn-p" onclick="ebsCreate()"><i data-lucide="plus"></i></button><button class="btn btn-s btn-sm" onclick="ebsList()"><i data-lucide="refresh-cw"></i></button></div>
 <div id="ebsListEl" style="margin-top:10px"></div>
@@ -1294,68 +1199,16 @@ curl -X POST https://you.mcloud.dev/api/s3/sql \
 <div style="display:flex;gap:6px"><button class="btn btn-p" onclick="cfStore()">저장</button><button class="btn btn-s" onclick="cfGet()">조회</button><button class="btn btn-g btn-sm" onclick="cfList()">목록</button></div>
 <div class="code" id="cfRes" style="margin-top:8px;display:none"></div>
 </div></div></div>
-<div data-panel="sto-cfn"><div class="card"><div class="card-h"><h3>CloudFormation - 임시 JSON</h3></div><div class="card-b">
-<div class="field-row"><div class="field"><label>이름</label><input class="inp" id="cfnN" placeholder="stack"></div><div class="field"><label>TTL (분)</label><input class="inp" id="cfnT" value="30" type="number" style="width:80px"></div></div>
-<div class="field"><label>JSON</label><textarea class="inp ta" id="cfnD" rows="3" placeholder='{"key":"value"}'></textarea></div>
-<div style="display:flex;gap:6px"><button class="btn btn-p" onclick="cfnCreate()">저장</button><button class="btn btn-s" onclick="cfnList()">목록</button></div>
-<div class="code" id="cfnRes" style="margin-top:8px;display:none"></div>
-</div></div></div>
 <div data-panel="sto-ws"><div class="card"><div class="card-h"><h3>WorkSpaces - 파일 공유</h3></div><div class="card-b">
 <label class="fdrop"><i data-lucide="upload-cloud"></i><div style="font-size:12px;font-weight:500">파일 업로드</div><input type="file" id="wsFile"></label>
 <button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="wsUpload()">업로드</button>
 <button class="btn btn-s" style="margin-top:8px;width:100%;justify-content:center" onclick="wsList()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg> 파일 목록 새로고침</button>
 <div id="wsListEl" style="margin-top:10px"></div>
 </div></div></div>
-<div data-panel="sto-kin"><div class="card"><div class="card-h"><h3>Kinesis - 파일 분류</h3></div><div class="card-b">
-<div class="field-row"><div class="field"><label>파일명</label><input class="inp" id="kinF" placeholder="photo.jpg"></div><button class="btn btn-p" onclick="kinClass()">분류</button></div>
-<div class="code" id="kinRes" style="margin-top:8px;display:none"></div>
-</div></div></div>
-<div data-panel="sto-emr"><div class="card"><div class="card-h"><h3>EMR - 저장소 할당</h3></div><div class="card-b">
-<div class="field-row"><div class="field"><label>이름</label><input class="inp" id="emrN" placeholder="config"></div><div class="field"><label>디렉토리</label><input class="inp" id="emrD" placeholder="data/"></div><div class="field"><label>최대 MB</label><input class="inp" id="emrM" value="100" type="number" style="width:80px"></div></div>
-<div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-p" onclick="emrAdd()">추가</button><button class="btn btn-s" onclick="emrList()">목록</button></div>
-<div class="code" id="emrRes" style="margin-top:8px;display:none"></div>
-</div></div></div>
 </div></div>
 </div>
 
-<!-- ======= DEPLOY ======= -->
-<div id="pg-deploy" class="pg-with-sb">
-<div class="inner-sb">
-<div class="is-title">배포</div>
-<div class="is-item active" onclick="sp('dp-ls',this)"><i data-lucide="globe"></i> Lightsail</div>
-<div class="is-item" onclick="sp('dp-eb',this)"><i data-lucide="server"></i> Elastic Beanstalk</div>
-<div class="is-item" onclick="sp('dp-r53',this)"><i data-lucide="link"></i> Route53</div>
-<div class="is-item" onclick="sp('dp-elb',this)"><i data-lucide="activity"></i> ELB</div>
-</div>
-<div class="page-content"><div class="page-inner">
-<div class="ph"><h1>배포</h1><p>Lightsail, EB, Route53, ELB</p></div>
-<div data-panel="dp-ls" class="show"><div class="card"><div class="card-h"><h3>Lightsail - HTML 배포</h3><button class="btn btn-s btn-sm" onclick="lsList()"><i data-lucide="refresh-cw"></i></button></div><div class="card-b">
-<div class="field"><label>사이트 이름</label><input class="inp" id="lsN" placeholder="my-site"></div>
-<div class="field"><label>HTML 코드</label><textarea class="inp ta" id="lsH" rows="8" placeholder="<h1>Hello!</h1>"></textarea></div>
-<button class="btn btn-p" onclick="lsDeploy()"><i data-lucide="rocket"></i> 배포</button>
-<div id="lsListEl" style="margin-top:12px"></div>
-</div></div></div>
-<div data-panel="dp-eb"><div class="card"><div class="card-h"><h3>Elastic Beanstalk - 앱 배포</h3><button class="btn btn-s btn-sm" onclick="ebList()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></button></div><div class="card-b">
-<div class="field"><label>앱 이름</label><input class="inp" id="ebN" placeholder="my-flask-app"></div>
-<label class="fdrop"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg><div style="font-size:12px;font-weight:500">.py 또는 .js 파일</div><div style="font-size:10px;color:var(--text3)">500줄 / 100KB 이하 · Groq AI 보안 검사</div><input type="file" id="ebF" accept=".py,.js"></label>
-<button class="btn btn-p" style="width:100%;justify-content:center;margin-top:8px" onclick="ebDeploy()">🚀 배포</button>
-<div id="ebRes" class="code" style="margin-top:8px;display:none"></div>
-<div id="ebListEl" style="margin-top:12px"></div>
-</div></div></div>
-<div data-panel="dp-r53"><div class="card"><div class="card-h"><h3>Route53 - DB 연결</h3></div><div class="card-b">
-<div class="field"><label>이름</label><input class="inp" id="r53N" placeholder="record"></div>
-<div class="field"><label>대상 ID</label><input class="inp" id="r53T" placeholder="ls-xxx"></div>
-<button class="btn btn-p" onclick="r53Add()">레코드 생성</button>
-<div class="code" id="r53Res" style="margin-top:8px;display:none"></div>
-</div></div></div>
-<div data-panel="dp-elb"><div class="card"><div class="card-h"><h3>ELB - Load Balancer</h3></div><div class="card-b">
-<div class="field"><label>이름</label><input class="inp" id="elbN" placeholder="lb"></div>
-<div class="field"><label>최대 동시접속</label><input class="inp" id="elbM" value="100" type="number"></div>
-<div style="display:flex;gap:6px"><button class="btn btn-p" onclick="elbSet()">저장</button><button class="btn btn-s" onclick="elbGet()">조회</button></div>
-<div class="code" id="elbRes" style="margin-top:8px;display:none"></div>
-</div></div></div>
-</div></div>
-</div>
+<!-- ======= (DEPLOY 삭제됨) ======= -->
 
 <!-- ======= SECURITY ======= -->
 <div id="pg-security" class="pg-with-sb">
@@ -1931,9 +1784,6 @@ function nav(id,el){
   if(el)el.classList.add('active');
   if(id==='dash')loadDash();
   if(id==='keys'){specialKeys();keyList();}
-  // Auto-load first panel so pages aren't empty
-  const autoLoad={ec2:ec2List,lambda:lamList,s3:s3Bkts,database:dbTblLoad,storage:ebsList,deploy:lsList,security:()=>{},cloudwatch:cwSum,users:loadUsers,docs:()=>{}};
-  if(autoLoad[id]){try{autoLoad[id]();}catch(e){}}
   renderIcons();
 }
 function sp(panel,el){
@@ -1979,16 +1829,13 @@ document.addEventListener('click',e=>{if(!e.target.closest('#projBtn'))$('projDD
 
 // ===== DASHBOARD =====
 const SVCS=[
-  {id:'ec2',name:'EC2',desc:'가상 머신',icon:'monitor',color:'var(--orange)'},
-  {id:'lambda',name:'Lambda',desc:'서버리스',icon:'zap',color:'var(--purple)'},
-  {id:'s3',name:'S3',desc:'스토리지',icon:'database',color:'var(--cyan)'},
   {id:'database',name:'데이터베이스',desc:'SQL + 테이블 + RLS',icon:'database-zap',color:'var(--green)'},
+  {id:'s3',name:'S3',desc:'스토리지',icon:'database',color:'var(--cyan)'},
   {id:'storage',name:'스토리지',desc:'EBS, CF 등',icon:'hard-drive',color:'var(--red)'},
-  {id:'deploy',name:'배포',desc:'Lightsail, EB',icon:'rocket',color:'var(--yellow)'},
   {id:'security',name:'보안',desc:'VPC, Auto',icon:'shield',color:'var(--orange)'},
   {id:'watch',name:'CloudWatch',desc:'모니터링',icon:'bar-chart-3',color:'var(--cyan)'},
   {id:'keys',name:'API Keys',desc:'키 관리',icon:'key',color:'var(--green)'},
-  {id:'docs',name:'API 문서',desc:'레퍼런스',icon:'file-text',color:'var(--purple)'},
+  {id:'docs',name:'API 문서',desc:'레퍼런스',icon:'file-text',color:'var(--blue)'},
 ];
 function renderSvcGrid(){$('svcGrid').innerHTML=SVCS.map(s=>`<div class="svc-card" onclick="nav('${s.id}')"><div class="svc-icon" style="background:${s.color}15;color:${s.color};border-color:${s.color}30"><i data-lucide="${s.icon}"></i></div><div class="svc-name">${s.name}</div><div class="svc-desc">${s.desc}</div></div>`).join('');renderIcons();}
 async function loadDash(){
@@ -2127,7 +1974,7 @@ async function _ec2Run(id,cmd,b,force){
 
 // ===== LAMBDA =====
 async function lamCreate(){const r=await api('POST','/api/lambda/functions',{name:V('lamName'),code:$('lamCode').value});if(r.error)return toast(r.error,0);toast('생성: '+r.name);lamList();}
-async function lamList(){const r=await api('GET','/api/lambda/functions');$('lamListEl').innerHTML=r.functions?.length?`<table class="tbl"><tr><th>이름</th><th>런타임</th><th></th></tr>${r.functions.map(f=>`<tr><td class="mono">${f.name}</td><td>${f.runtime}</td><td style="display:flex;gap:4px"><button class="btn btn-s btn-sm" onclick="lamEdit('${f.name}')">편집</button><button class="btn btn-p btn-sm" onclick="$('lamRunName').value='${f.name}';sp('lam-run',document.querySelectorAll('#pg-lambda .is-item')[2])">실행</button></td></tr>`).join('')}</table>`:'<div class="empty">아직 함수가 없습니다<br><span style="font-size:12px;color:var(--dim)">우측 상단 <b>새 함수</b>를 눌러 첫 Python 함수를 배포하세요</span></div>';}
+async function lamList(){const r=await api('GET','/api/lambda/functions');$('lamListEl').innerHTML=r.functions?.length?`<table class="tbl"><tr><th>이름</th><th>런타임</th><th></th></tr>${r.functions.map(f=>`<tr><td class="mono">${f.name}</td><td>${f.runtime}</td><td style="display:flex;gap:4px"><button class="btn btn-s btn-sm" onclick="lamEdit('${f.name}')">편집</button><button class="btn btn-p btn-sm" onclick="$('lamRunName').value='${f.name}';sp('lam-run',document.querySelectorAll('#pg-lambda .is-item')[2])">실행</button></td></tr>`).join('')}</table>`:'<div class="empty">없음</div>';}
 async function lamEdit(name){
   const r=await api('GET','/api/lambda/functions');
   const fn=(r.functions||[]).find(f=>f.name===name);
